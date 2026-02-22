@@ -6,6 +6,10 @@ Chrome 应用商店：<https://chrome.google.com/webstore/detail/memos-bber/cbhj
 
 ## 更新日志
 
+2026年02月22日 由于原作者基本放弃更新,现接手维护,不兼容更新,匹配 v0.26.1 ,欢迎各位大佬PR
+
+<details>
+<summary>点击展开/折叠内容</summary>
 2024.07.21 不兼容更新，已匹配 v0.22.3
 
 2024.06.15 感谢好心人 [PR#44](https://github.com/lmm214/memos-bber/pull/44)
@@ -58,3 +62,4 @@ Chrome 应用商店：<https://chrome.google.com/webstore/detail/memos-bber/cbhj
 
 2022.10.24 添加 visiblity 发送设置。
 
+</details>

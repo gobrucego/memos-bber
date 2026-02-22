@@ -181,7 +181,7 @@ function uploadImageNow(base64String, file) {
         filename: new_name,
         type: file.type
       };
-      var upAjaxUrl = info.apiUrl + 'api/v1/resources';
+      var upAjaxUrl = info.apiUrl + 'api/v1/attachments';
       $.ajax({
         url: upAjaxUrl,
         data: JSON.stringify(data),
@@ -247,8 +247,8 @@ $('#saveKey').click(function () {
   const settings = {
     async: true,
     crossDomain: true,
-    url: apiUrl + 'api/v1/auth/status',
-    method: 'POST',
+    url: apiUrl + 'api/v1/auth/me',
+    method: 'GET',
     headers: {
       'Authorization': 'Bearer ' + apiTokens
     }
@@ -256,9 +256,9 @@ $('#saveKey').click(function () {
 
   $.ajax(settings).done(function (response) {
     // 0.24 版本后无 id 字段，改为从 name 字段获取和判断认证是否成功
-    if (response && response.name) {
+    if (response && response.user.name) {
       // 如果响应包含用户name "users/{id}"，存储 apiUrl 和 apiTokens
-      var userid = parseInt(response.name.split('/').pop(), 10)
+      var userid = parseInt(response.user.name.split('/').pop(), 10)
       chrome.storage.sync.set(
         {
           apiUrl: apiUrl,
@@ -298,7 +298,7 @@ $('#tags').click(function () {
     if (info.apiUrl) {
       var parent = `users/${info.userid}`;
       // 从最近的1000条memo中获取tags,因此不保证获取能全部的
-      var tagUrl = info.apiUrl + 'api/v1/' + parent + '/memos?pageSize=1000';
+      var tagUrl = info.apiUrl + 'api/v1/memos?pageSize=1000';
       var tagDom = "";
       $.ajax({
         url: tagUrl,
@@ -368,7 +368,7 @@ $('#search').click(function () {
     var searchDom = ""
     if(pattern){
       $.ajax({
-        url:info.apiUrl+"api/v1/"+parent+"/memos"+filter,
+        url:info.apiUrl+"api/v1/memos"+filter,
         type:"GET",
         contentType:"application/json",
         dataType:"json",
@@ -429,7 +429,7 @@ $('#random').click(function () {
     var filter = "?filter=" + encodeURIComponent(`visibility in ["PUBLIC","PROTECTED"]`);
     if (info.status) {
       $("#randomlist").html('').hide()
-      var randomUrl = info.apiUrl + "api/v1/" +parent + "/memos" + filter;
+      var randomUrl = info.apiUrl + "api/v1/memos" + filter;
       $.ajax({
         url:randomUrl,
         type:"GET",
@@ -483,7 +483,7 @@ function randDom(randomData){
 $(document).on("click","#random-link",function () {
   var memoUid = $("#random-link").data('uid');
   get_info(function (info) {
-    chrome.tabs.create({url:info.apiUrl+"m/"+memoUid})
+    chrome.tabs.create({url:info.apiUrl+"memos/"+memoUid})
   })
 })
 
