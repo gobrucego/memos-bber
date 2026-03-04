@@ -94,6 +94,71 @@ input.inputer{border-bottom: 1px solid #ccc;width:75%;}
     margin-top: 1rem;
     justify-content: space-between;
 }
+
+.upload-list-wrapper{
+    margin-top: .5rem;
+}
+.upload-list-title{
+    font-size: .875rem;
+    color: #999;
+    margin-top: .5rem;
+    margin-bottom: .25rem;
+}
+.upload-list{
+    border: 1px solid rgb(229,231,235);
+    border-radius: .5rem;
+    background-color: rgb(255,255,255);
+    padding: .25rem;
+}
+.upload-empty{
+    padding: .5rem .75rem;
+    font-size: .875rem;
+    color: #999;
+}
+.upload-item{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: .4rem .5rem;
+    border-radius: .25rem;
+    color:#666;
+}
+.upload-item + .upload-item{
+    border-top: 1px solid rgb(243,244,246);
+}
+.upload-item.drag-over{
+    background-color: rgb(243,244,246);
+}
+.upload-left{
+    display:flex;
+    align-items:center;
+    min-width: 0;
+    gap: .5rem;
+}
+.upload-drag{
+    cursor: grab;
+    opacity: .6;
+    user-select: none;
+}
+.upload-filename{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .875rem;
+}
+.upload-del{
+    cursor:pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: .15rem .35rem;
+    border-radius: .25rem;
+    opacity: .6;
+    background-color: transparent;
+}
+.upload-del:hover{
+    opacity: 1;
+    background-color: rgb(243,244,246);
+}
 .common-tools-container {
     display: flex;
     flex-direction: row;

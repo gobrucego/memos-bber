@@ -14,38 +14,53 @@
    "sendLinkTo": {
       "message": "Send link to Memos"
    },
-   "sendImageTo": {
-      "message": "Send image to Memos"
-   },
    "saveBtn":{
       "message": "Save"
    },
    "placeApiUrl":{
-      "message": "Memos Self Home Url"
+      "message": "Memos site URL"
    },
    "placeApiTokens":{
       "message": "Memos Access Tokens"
    },
    "placeContent":{
-      "message": "Any thoughts..."
+      "message": "What's on your mind..."
    },
    "lockPrivate":{
-      "message": "Only visible to you"
+      "message": "Private"
    },
    "lockProtected":{
-      "message": "Visible to members"
+      "message": "Protected"
    },
    "lockPublic":{
-      "message": "Everyone can see"
+      "message": "Public"
    },
    "submitBtn":{
       "message": "Save"
    },
    "placeHideInput":{
-      "message": "Default 'Only visible to you' Tag name"
+      "message": "Default 'Private' tag name"
    },
    "placeShowInput":{
       "message": "Default 'Everyone can see' Tag name"
+   },
+   "uploadedListTitle": {
+      "message": "Uploaded files, Drag to reorder"
+   },
+   "uploadedListEmpty": {
+      "message": "No uploaded files"
+   },
+   "tipReorder": {
+      "message": "Drag to reorder"
+   },
+   "tipDeleteAttachment": {
+      "message": "Delete"
+   },
+   "attachmentDeleteSuccess": {
+      "message": "Deleted"
+   },
+   "attachmentDeleteFailed": {
+      "message": "Delete failed 😭"
    },
    "picDrag":{
       "message": "Drag upload the image"
@@ -94,5 +109,35 @@
    },
    "invalidToken":{
       "message": "Invalid token or url 😭"
+   },
+   "tipOpenSite": {
+      "message": "Open Memos"
+   },
+   "tipSettings": {
+      "message": "Settings"
+   },
+   "tipTags": {
+      "message": "Insert tag"
+   },
+   "tipTodo": {
+      "message": "Insert todo"
+   },
+   "tipUpload": {
+      "message": "Upload file"
+   },
+   "tipLink": {
+      "message": "Insert current tab link"
+   },
+   "tipRandom": {
+      "message": "Random memo"
+   },
+   "tipSearch": {
+      "message": "Search"
+   },
+   "tipVisibility": {
+      "message": "Visibility"
+   },
+   "tipSend": {
+      "message": "Send (Ctrl/⌘+Enter)"
    }
 }

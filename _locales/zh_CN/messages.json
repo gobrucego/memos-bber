@@ -94,5 +94,53 @@
    },
    "invalidToken":{
       "message": "无效的 token 或 url 😭"
+   },
+   "uploadedListTitle": {
+      "message": "已上传文件,可拖动排序"
+   },
+   "uploadedListEmpty": {
+      "message": "暂无已上传文件"
+   },
+   "tipReorder": {
+      "message": "拖动排序"
+   },
+   "tipDeleteAttachment": {
+      "message": "删除"
+   },
+   "attachmentDeleteSuccess": {
+      "message": "删除成功"
+   },
+   "attachmentDeleteFailed": {
+      "message": "删除失败 😭"
+   },
+   "tipOpenSite": {
+      "message": "打开 Memos"
+   },
+   "tipSettings": {
+      "message": "设置"
+   },
+   "tipTags": {
+      "message": "插入标签"
+   },
+   "tipTodo": {
+      "message": "插入待办"
+   },
+   "tipUpload": {
+      "message": "上传文件"
+   },
+   "tipLink": {
+      "message": "插入当前页面链接"
+   },
+   "tipRandom": {
+      "message": "随机一条"
+   },
+   "tipSearch": {
+      "message": "搜索"
+   },
+   "tipVisibility": {
+      "message": "可见性"
+   },
+   "tipSend": {
+      "message": "发送（Ctrl/⌘+Enter）"
    }
 }

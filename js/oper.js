@@ -1,6 +1,8 @@
 dayjs.extend(window.dayjs_plugin_relativeTime)
 dayjs.locale('zh-cn')
 
+let relistNow = []
+
 function get_info(callback) {
   chrome.storage.sync.get(
     {
@@ -17,7 +19,7 @@ function get_info(callback) {
     function (items) {
       var flag = false
       var returnObject = {}
-      if (items.apiUrl === '' || items.repo === '') {
+      if (items.apiUrl === '' || items.apiTokens === '') {
         flag = false
       } else {
         flag = true
@@ -67,8 +69,20 @@ get_info(function (info) {
   } else {
     $("textarea[name=text]").val(info.open_content)
   }
+
+  relistNow = Array.isArray(info.resourceIdList) ? info.resourceIdList : []
+  renderUploadList(relistNow)
   //从localstorage 里面读取数据
   setTimeout(get_info, 1)
+})
+
+chrome.storage.onChanged.addListener(function (changes, areaName) {
+  if (areaName !== 'sync') return
+  if (!changes.resourceIdList) return
+  relistNow = Array.isArray(changes.resourceIdList.newValue)
+    ? changes.resourceIdList.newValue
+    : []
+  renderUploadList(relistNow)
 })
 
 $("textarea[name=text]").focus()
@@ -140,7 +154,147 @@ function initDrag() {
   }
 }
 
-let relistNow = []
+function escapeHtml(input) {
+  return String(input)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function renderUploadList(list) {
+  const $wrapper = $('.upload-list-wrapper')
+  const $list = $('#uploadlist')
+  if ($list.length === 0) return
+
+  const items = Array.isArray(list) ? list : []
+  if (items.length === 0) {
+    if ($wrapper.length) $wrapper.hide()
+    $list.html('')
+    return
+  }
+
+  if ($wrapper.length) $wrapper.show()
+
+  const tipReorder = escapeHtml(chrome.i18n.getMessage('tipReorder'))
+  const tipDelete = escapeHtml(chrome.i18n.getMessage('tipDeleteAttachment'))
+
+  let html = ''
+  for (let i = 0; i < items.length; i++) {
+    const att = items[i] || {}
+    const name = att.name || ''
+    const filename = att.filename || name
+    html +=
+      '<div class="upload-item" draggable="true" data-index="' +
+      i +
+      '" data-name="' +
+      escapeHtml(name) +
+      '">' +
+      '<div class="upload-left">' +
+      '<span class="upload-drag" title="' +
+      tipReorder +
+      '">≡</span>' +
+      '<span class="upload-filename">' +
+      escapeHtml(filename) +
+      '</span>' +
+      '</div>' +
+      '<button type="button" class="upload-del" data-name="' +
+      escapeHtml(name) +
+      '" title="' +
+      tipDelete +
+      '">×</button>' +
+      '</div>'
+  }
+
+  $list.html(html)
+}
+
+function saveUploadList(nextList, callback) {
+  relistNow = Array.isArray(nextList) ? nextList : []
+  chrome.storage.sync.set({ resourceIdList: relistNow }, callback)
+}
+
+let uploadDragIndex = null
+
+$(document).on('dragstart', '.upload-item', function (e) {
+  uploadDragIndex = Number($(this).data('index'))
+  const dt = e.originalEvent && e.originalEvent.dataTransfer
+  if (dt) {
+    dt.effectAllowed = 'move'
+    dt.setData('text/plain', String(uploadDragIndex))
+  }
+})
+
+$(document).on('dragover', '.upload-item', function (e) {
+  e.preventDefault()
+  $(this).addClass('drag-over')
+  const dt = e.originalEvent && e.originalEvent.dataTransfer
+  if (dt) dt.dropEffect = 'move'
+})
+
+$(document).on('dragleave', '.upload-item', function () {
+  $(this).removeClass('drag-over')
+})
+
+$(document).on('drop', '.upload-item', function (e) {
+  e.preventDefault()
+  $('.upload-item.drag-over').removeClass('drag-over')
+
+  const fromIndex =
+    uploadDragIndex != null
+      ? uploadDragIndex
+      : Number(
+          (e.originalEvent && e.originalEvent.dataTransfer
+            ? e.originalEvent.dataTransfer.getData('text/plain')
+            : '') || -1
+        )
+  const toIndex = Number($(this).data('index'))
+
+  uploadDragIndex = null
+  if (!Number.isFinite(fromIndex) || !Number.isFinite(toIndex)) return
+  if (fromIndex < 0 || toIndex < 0) return
+  if (fromIndex === toIndex) return
+
+  const next = (Array.isArray(relistNow) ? relistNow : []).slice()
+  if (fromIndex >= next.length || toIndex >= next.length) return
+  const moved = next.splice(fromIndex, 1)[0]
+  next.splice(toIndex, 0, moved)
+
+  saveUploadList(next, function () {
+    renderUploadList(relistNow)
+  })
+})
+
+$(document).on('click', '.upload-del', function () {
+  const name = $(this).data('name')
+  if (!name) return
+
+  get_info(function (info) {
+    if (!info.status) {
+      $.message({ message: chrome.i18n.getMessage('placeApiUrl') })
+      return
+    }
+
+    $.ajax({
+      url: info.apiUrl + 'api/v1/' + name,
+      type: 'DELETE',
+      headers: { Authorization: 'Bearer ' + info.apiTokens },
+      success: function () {
+        const next = (Array.isArray(relistNow) ? relistNow : []).filter(function (x) {
+          return x && x.name !== name
+        })
+        saveUploadList(next, function () {
+          $.message({ message: chrome.i18n.getMessage('attachmentDeleteSuccess') })
+          renderUploadList(relistNow)
+        })
+      },
+      error: function () {
+        $.message({ message: chrome.i18n.getMessage('attachmentDeleteFailed') })
+      }
+    })
+  })
+})
 function uploadImage(file) {
   $.message({
     message: chrome.i18n.getMessage("picUploading"),
@@ -196,9 +350,10 @@ function uploadImageNow(base64String, file) {
           if (data.name) {
             // 更新上传的文件信息并暂存浏览器本地
             relistNow.push({
-              "name":data.name,
-              "createTime":data.createTime,
-              "type":data.type
+              "name": data.name,
+              "filename": data.filename || new_name,
+              "createTime": data.createTime,
+              "type": data.type
             })
             chrome.storage.sync.set(
               {
@@ -383,8 +538,8 @@ $('#search').click(function () {
             for(var i=0;i < searchData.length;i++){
               var memosID = searchData[i].name.split('/').pop();
               searchDom += '<div class="random-item"><div class="random-time"><span id="random-link" data-uid="'+memosID+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M864 640a32 32 0 0 1 64 0v224.096A63.936 63.936 0 0 1 864.096 928H159.904A63.936 63.936 0 0 1 96 864.096V159.904C96 124.608 124.64 96 159.904 96H384a32 32 0 0 1 0 64H192.064A31.904 31.904 0 0 0 160 192.064v639.872A31.904 31.904 0 0 0 192.064 864h639.872A31.904 31.904 0 0 0 864 831.936V640zm-485.184 52.48a31.84 31.84 0 0 1-45.12-.128 31.808 31.808 0 0 1-.128-45.12L815.04 166.048l-176.128.736a31.392 31.392 0 0 1-31.584-31.744 32.32 32.32 0 0 1 31.84-32l255.232-1.056a31.36 31.36 0 0 1 31.584 31.584L924.928 388.8a32.32 32.32 0 0 1-32 31.84 31.392 31.392 0 0 1-31.712-31.584l.736-179.392L378.816 692.48z" fill="#666" data-spm-anchor-id="a313x.7781069.0.i12" class="selected"/></svg></span><span id="random-delete" data-name="'+searchData[i].name+'" data-uid="'+memosID+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M224 322.6h576c16.6 0 30-13.4 30-30s-13.4-30-30-30H224c-16.6 0-30 13.4-30 30 0 16.5 13.5 30 30 30zm66.1-144.2h443.8c16.6 0 30-13.4 30-30s-13.4-30-30-30H290.1c-16.6 0-30 13.4-30 30s13.4 30 30 30zm339.5 435.5H394.4c-16.6 0-30 13.4-30 30s13.4 30 30 30h235.2c16.6 0 30-13.4 30-30s-13.4-30-30-30z" fill="#666"/><path d="M850.3 403.9H173.7c-33 0-60 27-60 60v360c0 33 27 60 60 60h676.6c33 0 60-27 60-60v-360c0-33-27-60-60-60zm-.1 419.8l-.1.1H173.9l-.1-.1V464l.1-.1h676.2l.1.1v359.7z" fill="#666"/></svg></span>'+dayjs(searchData.createTime).fromNow()+'</div><div class="random-content">'+searchData[i].content.replace(/!\[.*?\]\((.*?)\)/g,' <img class="random-image" src="$1"/> ').replace(/\[(.*?)\]\((.*?)\)/g,' <a href="$2" target="_blank">$1</a> ')+'</div>'
-              if(searchData[i].resources && searchData[i].resources.length > 0){
-                var resources = searchData[i].resources;
+              var resources = (searchData[i].attachments && searchData[i].attachments.length > 0) ? searchData[i].attachments : (searchData[i].resources || []);
+              if(resources && resources.length > 0){
                 for(var j=0;j < resources.length;j++){
                   var restype = resources[j].type.slice(0,5);
                   var resexlink = resources[j].externalLink
@@ -454,8 +609,8 @@ function randDom(randomData){
   get_info(function (info) {
   var memosID = randomData.name.split('/').pop();
   var randomDom = '<div class="random-item"><div class="random-time"><span id="random-link" data-uid="'+memosID+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M864 640a32 32 0 0 1 64 0v224.096A63.936 63.936 0 0 1 864.096 928H159.904A63.936 63.936 0 0 1 96 864.096V159.904C96 124.608 124.64 96 159.904 96H384a32 32 0 0 1 0 64H192.064A31.904 31.904 0 0 0 160 192.064v639.872A31.904 31.904 0 0 0 192.064 864h639.872A31.904 31.904 0 0 0 864 831.936V640zm-485.184 52.48a31.84 31.84 0 0 1-45.12-.128 31.808 31.808 0 0 1-.128-45.12L815.04 166.048l-176.128.736a31.392 31.392 0 0 1-31.584-31.744 32.32 32.32 0 0 1 31.84-32l255.232-1.056a31.36 31.36 0 0 1 31.584 31.584L924.928 388.8a32.32 32.32 0 0 1-32 31.84 31.392 31.392 0 0 1-31.712-31.584l.736-179.392L378.816 692.48z" fill="#666" data-spm-anchor-id="a313x.7781069.0.i12" class="selected"/></svg></span><span id="random-delete" data-uid="'+memosID+'" data-name="'+randomData.name+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M224 322.6h576c16.6 0 30-13.4 30-30s-13.4-30-30-30H224c-16.6 0-30 13.4-30 30 0 16.5 13.5 30 30 30zm66.1-144.2h443.8c16.6 0 30-13.4 30-30s-13.4-30-30-30H290.1c-16.6 0-30 13.4-30 30s13.4 30 30 30zm339.5 435.5H394.4c-16.6 0-30 13.4-30 30s13.4 30 30 30h235.2c16.6 0 30-13.4 30-30s-13.4-30-30-30z" fill="#666"/><path d="M850.3 403.9H173.7c-33 0-60 27-60 60v360c0 33 27 60 60 60h676.6c33 0 60-27 60-60v-360c0-33-27-60-60-60zm-.1 419.8l-.1.1H173.9l-.1-.1V464l.1-.1h676.2l.1.1v359.7z" fill="#666"/></svg></span>'+dayjs(randomData.createTime).fromNow()+'</div><div class="random-content">'+randomData.content.replace(/!\[.*?\]\((.*?)\)/g,' <img class="random-image" src="$1"/> ').replace(/\[(.*?)\]\((.*?)\)/g,' <a href="$2" target="_blank">$1</a> ')+'</div>'
-  if(randomData.resources && randomData.resources.length > 0){
-    var resources = randomData.resources;
+  var resources = (randomData.attachments && randomData.attachments.length > 0) ? randomData.attachments : (randomData.resources || []);
+  if(resources && resources.length > 0){
     for(var j=0;j < resources.length;j++){
       var restype = resources[j].type.slice(0,5);
       var resexlink = resources[j].externalLink
@@ -641,7 +796,7 @@ function sendText() {
               url:info.apiUrl+'api/v1/'+data.name,
               type:"PATCH",
               data:JSON.stringify({
-                'resources': info.resourceIdList || [],
+                'attachments': (info.resourceIdList || []).map(function (att) { return { name: att.name } }),
               }),
               contentType:"application/json",
               dataType:"json",
@@ -661,6 +816,8 @@ function sendText() {
               })
               //$("#content_submit_text").removeAttr('disabled');
               $("textarea[name=text]").val('')
+              relistNow = []
+              renderUploadList(relistNow)
             }
           )
       },error:function(err){//清空open_action（打开时候进行的操作）,同时清空open_content
