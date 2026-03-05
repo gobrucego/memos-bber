@@ -145,5 +145,23 @@
    },
    "tipSend": {
       "message": "发送（Ctrl/⌘+Enter）"
+   },
+   "tipLanguage": {
+      "message": "语言"
+   },
+   "langAuto": {
+      "message": "跟随浏览器"
+   },
+   "langEnglish": {
+      "message": "English"
+   },
+   "langChineseSimplified": {
+      "message": "简体中文"
+   },
+   "langJapanese": {
+      "message": "日本語"
+   },
+   "langKorean": {
+      "message": "한국어"
    }
 }

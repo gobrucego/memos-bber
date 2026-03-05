@@ -231,6 +231,23 @@ input.inputer{border-bottom: 1px solid #ccc;width:75%;}
     right: 1rem;
     top: 0.5rem;
 }
+
+.lang-switcher{
+    position: absolute;
+    right: 3.5rem;
+    top: .55rem;
+}
+
+.lang-select{
+    border: 1px solid rgb(229,231,235);
+    border-radius: .25rem;
+    background-color: rgb(255,255,255);
+    color: #666;
+    font-size: .75rem;
+    line-height: 1.25rem;
+    padding: .15rem .35rem;
+    cursor: pointer;
+}
 #blog_info{
 
 }

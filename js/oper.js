@@ -1,5 +1,67 @@
 dayjs.extend(window.dayjs_plugin_relativeTime)
-dayjs.locale('zh-cn')
+let currentMemoLock = ''
+
+function msg(key) {
+  if (typeof window.t === 'function') return window.t(key)
+  return chrome.i18n.getMessage(key) || ''
+}
+
+function applyDayjsLocaleByUiLanguage(uiLang) {
+  const lang = String(uiLang || 'auto')
+  if (lang === 'zh_CN') {
+    dayjs.locale('zh-cn')
+    return
+  }
+
+  if (lang === 'ja') {
+    dayjs.locale('ja')
+    return
+  }
+
+  if (lang === 'ko') {
+    dayjs.locale('ko')
+    return
+  }
+
+  if (lang === 'en') {
+    dayjs.locale('en')
+    return
+  }
+
+  // auto: best-effort infer from browser UI language
+  const ui = String(chrome.i18n.getUILanguage ? chrome.i18n.getUILanguage() : '').toLowerCase()
+  if (ui.startsWith('zh')) {
+    dayjs.locale('zh-cn')
+    return
+  }
+  if (ui.startsWith('ja')) {
+    dayjs.locale('ja')
+    return
+  }
+  if (ui.startsWith('ko')) {
+    dayjs.locale('ko')
+    return
+  }
+  dayjs.locale('en')
+}
+
+function updateLockNowText(lockType) {
+  if (lockType === 'PUBLIC') {
+    $('#lock-now').text(msg('lockPublic'))
+  } else if (lockType === 'PRIVATE') {
+    $('#lock-now').text(msg('lockPrivate'))
+  } else if (lockType === 'PROTECTED') {
+    $('#lock-now').text(msg('lockProtected'))
+  }
+}
+
+applyDayjsLocaleByUiLanguage(typeof window.getUiLanguage === 'function' ? window.getUiLanguage() : 'auto')
+
+window.addEventListener('i18n:changed', (ev) => {
+  applyDayjsLocaleByUiLanguage(ev && ev.detail ? ev.detail.lang : 'auto')
+  updateLockNowText(currentMemoLock)
+  renderUploadList(relistNow)
+})
 
 let relistNow = []
 
@@ -52,15 +114,10 @@ get_info(function (info) {
     chrome.storage.sync.set(
       { memo_lock: 'PUBLIC' }
     )
-    $("#lock-now").text(chrome.i18n.getMessage("lockPublic"))
+    memoNow = 'PUBLIC'
   }
-  if (memoNow == "PUBLIC") {
-    $("#lock-now").text(chrome.i18n.getMessage("lockPublic"))
-  } else if (memoNow == "PRIVATE") {
-    $("#lock-now").text(chrome.i18n.getMessage("lockPrivate"))
-  } else if (memoNow == "PROTECTED") {
-    $("#lock-now").text(chrome.i18n.getMessage("lockProtected"))
-  }
+  currentMemoLock = memoNow
+  updateLockNowText(memoNow)
   $('#apiUrl').val(info.apiUrl)
   $('#apiTokens').val(info.apiTokens)
   $('#hideInput').val(info.hidetag)
@@ -125,7 +182,7 @@ function initDrag() {
   obj.ondragenter = function (ev) {
     if (ev.target.className === 'common-editor-inputer') {
       $.message({
-        message: chrome.i18n.getMessage("picDrag"),
+        message: msg('picDrag'),
         autoClose: false
       })
       $('body').css('opacity', 0.3)
@@ -149,7 +206,7 @@ function initDrag() {
     ev.preventDefault()
     if (ev.target.className === 'common-editor-inputer') {
       $.message({
-        message: chrome.i18n.getMessage("picCancelDrag")
+        message: msg('picCancelDrag')
       })
       $('body').css('opacity', 1)
     }
@@ -179,8 +236,8 @@ function renderUploadList(list) {
 
   if ($wrapper.length) $wrapper.show()
 
-  const tipReorder = escapeHtml(chrome.i18n.getMessage('tipReorder'))
-  const tipDelete = escapeHtml(chrome.i18n.getMessage('tipDeleteAttachment'))
+  const tipReorder = escapeHtml(msg('tipReorder'))
+  const tipDelete = escapeHtml(msg('tipDeleteAttachment'))
 
   let html = ''
   for (let i = 0; i < items.length; i++) {
@@ -274,7 +331,7 @@ $(document).on('click', '.upload-del', function () {
 
   get_info(function (info) {
     if (!info.status) {
-      $.message({ message: chrome.i18n.getMessage('placeApiUrl') })
+      $.message({ message: msg('placeApiUrl') })
       return
     }
 
@@ -287,19 +344,19 @@ $(document).on('click', '.upload-del', function () {
           return x && x.name !== name
         })
         saveUploadList(next, function () {
-          $.message({ message: chrome.i18n.getMessage('attachmentDeleteSuccess') })
+          $.message({ message: msg('attachmentDeleteSuccess') })
           renderUploadList(relistNow)
         })
       },
       error: function () {
-        $.message({ message: chrome.i18n.getMessage('attachmentDeleteFailed') })
+        $.message({ message: msg('attachmentDeleteFailed') })
       }
     })
   })
 })
 function uploadImage(file) {
   $.message({
-    message: chrome.i18n.getMessage("picUploading"),
+    message: msg('picUploading'),
     autoClose: false
   });
     const reader = new FileReader();
@@ -355,7 +412,7 @@ function uploadImageNow(base64String, file) {
                 resourceIdList: relistNow
               },
               function () {
-                $.message({ message: chrome.i18n.getMessage('picSuccess') })
+                $.message({ message: msg('picSuccess') })
               }
             )
           } else {
@@ -366,18 +423,18 @@ function uploadImageNow(base64String, file) {
                 resourceIdList: []
               },
               function () {
-                $.message({ message: chrome.i18n.getMessage('picFailed') })
+                $.message({ message: msg('picFailed') })
               }
             )
           }
         },
         function () {
-          $.message({ message: chrome.i18n.getMessage('picFailed') })
+          $.message({ message: msg('picFailed') })
         }
       )
     }else {
       $.message({
-        message: chrome.i18n.getMessage("placeApiUrl")
+        message: msg('placeApiUrl')
       })
     }
   });
@@ -392,7 +449,7 @@ $('#saveKey').click(function () {
 
   window.MemosApi.authWithFallback(apiUrl, apiTokens, function (auth) {
     if (!auth || auth.userId == null) {
-      $.message({ message: chrome.i18n.getMessage('invalidToken') })
+      $.message({ message: msg('invalidToken') })
       return
     }
 
@@ -404,7 +461,7 @@ $('#saveKey').click(function () {
         memoUiPath: auth.uiPath || 'memos'
       },
       function () {
-        $.message({ message: chrome.i18n.getMessage('saveSuccess') })
+        $.message({ message: msg('saveSuccess') })
         $('#blog_info').hide()
       }
     )
@@ -446,12 +503,12 @@ $('#tags').click(function () {
           $("#taglist").html(tagDom).slideToggle(500)
         },
         function () {
-          $.message({ message: chrome.i18n.getMessage('placeApiUrl') })
+          $.message({ message: msg('placeApiUrl') })
         }
       )
     } else {
       $.message({
-        message: chrome.i18n.getMessage("placeApiUrl")
+        message: msg('placeApiUrl')
       })
     }
   })
@@ -470,7 +527,7 @@ $('#saveTag').click(function () {
     },
     function () {
       $.message({
-        message: chrome.i18n.getMessage("saveSuccess")
+        message: msg('saveSuccess')
       })
       $('#taghide').hide()
     }
@@ -485,6 +542,7 @@ $(document).on("click",".item-lock",function () {
   $("#lock-wrapper").toggleClass( "!hidden", 1000 );
   $("#lock-now").text($(this).text())
     _this = $(this)[0].dataset.type;
+    currentMemoLock = _this
     chrome.storage.sync.set(
       {memo_lock: _this}
     )
@@ -506,7 +564,7 @@ $('#search').click(function () {
           let searchData = window.MemosApi.extractMemosListFromResponse(data)
           if(searchData.length == 0){
             $.message({
-              message: chrome.i18n.getMessage("searchNone")
+              message: msg('searchNone')
             })
           }else{
             for(var i=0;i < searchData.length;i++){
@@ -540,17 +598,17 @@ $('#search').click(function () {
           }
         },
         function () {
-          $.message({ message: chrome.i18n.getMessage('searchNone') })
+          $.message({ message: msg('searchNone') })
         }
       )
     }else{
       $.message({
-        message: chrome.i18n.getMessage("searchNow")
+        message: msg('searchNow')
       })
     }
   } else {
     $.message({
-      message: chrome.i18n.getMessage("placeApiUrl")
+      message: msg('placeApiUrl')
     })
   }
 })
@@ -572,12 +630,12 @@ $('#random').click(function () {
           randDom(randomData)
         },
         function () {
-          $.message({ message: chrome.i18n.getMessage('placeApiUrl') })
+          $.message({ message: msg('placeApiUrl') })
         }
       )
     } else {
       $.message({
-        message: chrome.i18n.getMessage("placeApiUrl")
+        message: msg('placeApiUrl')
       })
     }
   })
@@ -639,11 +697,11 @@ get_info(function (info) {
     success: function(result){
           $("#randomlist").html('').hide()
               $.message({
-                message: chrome.i18n.getMessage("archiveSuccess")
+                message: msg('archiveSuccess')
               })
   },error:function(err){//清空open_action（打开时候进行的操作）,同时清空open_content
               $.message({
-                message: chrome.i18n.getMessage("archiveFailed")
+                message: msg('archiveFailed')
               })
           }
   })
@@ -667,7 +725,7 @@ $('#getlink').click(function () {
       add(linkHtml);
     }else{
       $.message({
-        message: chrome.i18n.getMessage("getTabFailed")
+        message: msg('getTabFailed')
       })
     }
   })
@@ -711,7 +769,7 @@ $('#content_submit_text').click(function () {
     sendText()
   }else{
     $.message({
-      message: chrome.i18n.getMessage("placeContent")
+      message: msg('placeContent')
     })
   }
 })
@@ -733,7 +791,7 @@ function getOne(memosId){
         })
   } else {
     $.message({
-      message: chrome.i18n.getMessage("placeApiUrl")
+      message: msg('placeApiUrl')
     })
   }
   })
@@ -743,7 +801,7 @@ function sendText() {
   get_info(function (info) {
     if (info.status) {
       $.message({
-        message: chrome.i18n.getMessage("memoUploading")
+        message: msg('memoUploading')
       })
       //$("#content_submit_text").attr('disabled','disabled');
       let content = $("textarea[name=text]").val()
@@ -789,7 +847,7 @@ function sendText() {
             { open_action: '', open_content: '',resourceIdList:[]},
             function () {
               $.message({
-                message: chrome.i18n.getMessage("memoSuccess")
+                message: msg('memoSuccess')
               })
               //$("#content_submit_text").removeAttr('disabled');
               $("textarea[name=text]").val('')
@@ -802,14 +860,14 @@ function sendText() {
                 { open_action: '', open_content: '',resourceIdList:[] },
                 function () {
                   $.message({
-                    message: chrome.i18n.getMessage("memoFailed")
+                    message: msg('memoFailed')
                   })
                 }
               )},
       })
     } else {
       $.message({
-        message: chrome.i18n.getMessage("placeApiUrl")
+        message: msg('placeApiUrl')
       })
     }
   })

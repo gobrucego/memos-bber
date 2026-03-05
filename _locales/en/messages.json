@@ -14,6 +14,9 @@
    "sendLinkTo": {
       "message": "Send link to Memos"
    },
+   "sendImageTo": {
+      "message": "Send image to Memos"
+   },
    "saveBtn":{
       "message": "Save"
    },
@@ -142,5 +145,23 @@
    },
    "tipSend": {
       "message": "Send (Ctrl/⌘+Enter)"
+   },
+   "tipLanguage": {
+      "message": "Language"
+   },
+   "langAuto": {
+      "message": "Auto"
+   },
+   "langEnglish": {
+      "message": "English"
+   },
+   "langChineseSimplified": {
+      "message": "简体中文"
+   },
+   "langJapanese": {
+      "message": "日本語"
+   },
+   "langKorean": {
+      "message": "한국어"
    }
 }

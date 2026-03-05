@@ -1,0 +1,167 @@
+{
+  "extName": {
+    "message": "Memos"
+  },
+  "actionTitle": {
+    "message": "Memos に送信"
+  },
+  "extDescription": {
+    "message": "memos: 軽量なセルフホスト型メモハブ。"
+  },
+  "sendTo": {
+    "message": "Memos に \"%s\" を送信"
+  },
+  "sendLinkTo": {
+    "message": "リンクを Memos に送信"
+  },
+  "sendImageTo": {
+    "message": "画像を Memos に送信"
+  },
+  "saveBtn": {
+    "message": "保存"
+  },
+  "supportedMemosVersion": {
+    "message": "Memos v0.24.0+ に対応（テスト済み: 0.24.0 / 0.25.0 / 0.26.x）"
+  },
+  "placeApiUrl": {
+    "message": "Memos サイトURL"
+  },
+  "placeApiTokens": {
+    "message": "Memos アクセストークン"
+  },
+  "placeContent": {
+    "message": "今のメモは…"
+  },
+  "lockPrivate": {
+    "message": "非公開"
+  },
+  "lockProtected": {
+    "message": "保護"
+  },
+  "lockPublic": {
+    "message": "公開"
+  },
+  "submitBtn": {
+    "message": "送信"
+  },
+  "placeHideInput": {
+    "message": "既定の「非公開」タグ名"
+  },
+  "placeShowInput": {
+    "message": "既定の「全員に公開」タグ名"
+  },
+  "uploadedListTitle": {
+    "message": "アップロード済みファイル（ドラッグで並べ替え）"
+  },
+  "uploadedListEmpty": {
+    "message": "アップロード済みファイルはありません"
+  },
+  "tipReorder": {
+    "message": "ドラッグして並べ替え"
+  },
+  "tipDeleteAttachment": {
+    "message": "削除"
+  },
+  "attachmentDeleteSuccess": {
+    "message": "削除しました"
+  },
+  "attachmentDeleteFailed": {
+    "message": "削除に失敗しました 😭"
+  },
+  "picDrag": {
+    "message": "画像をここにドラッグしてアップロード"
+  },
+  "picCancelDrag": {
+    "message": "アップロードをキャンセル"
+  },
+  "picUploading": {
+    "message": "画像をアップロード中..."
+  },
+  "picSuccess": {
+    "message": "アップロード完了"
+  },
+  "picFailed": {
+    "message": "アップロード失敗"
+  },
+  "picPending": {
+    "message": "画像のアップロードが進行中です"
+  },
+  "saveSuccess": {
+    "message": "保存しました！"
+  },
+  "searchNow": {
+    "message": "何を探していますか？"
+  },
+  "searchNone": {
+    "message": "別のキーワードを試してください！"
+  },
+  "archiveSuccess": {
+    "message": "アーカイブ成功 😊"
+  },
+  "archiveFailed": {
+    "message": "アーカイブ失敗 😭"
+  },
+  "getTabFailed": {
+    "message": "タブの取得に失敗 😭"
+  },
+  "memoUploading": {
+    "message": "送信中"
+  },
+  "memoSuccess": {
+    "message": "成功！😊"
+  },
+  "memoFailed": {
+    "message": "失敗！😭"
+  },
+  "invalidToken": {
+    "message": "無効なトークンまたはURL 😭"
+  },
+  "tipOpenSite": {
+    "message": "Memos を開く"
+  },
+  "tipSettings": {
+    "message": "設定"
+  },
+  "tipTags": {
+    "message": "タグを挿入"
+  },
+  "tipTodo": {
+    "message": "ToDo を挿入"
+  },
+  "tipUpload": {
+    "message": "ファイルをアップロード"
+  },
+  "tipLink": {
+    "message": "現在のタブのリンクを挿入"
+  },
+  "tipRandom": {
+    "message": "ランダムメモ"
+  },
+  "tipSearch": {
+    "message": "検索"
+  },
+  "tipVisibility": {
+    "message": "公開範囲"
+  },
+  "tipSend": {
+    "message": "送信（Ctrl/⌘+Enter）"
+  },
+  "tipLanguage": {
+    "message": "言語"
+  },
+  "langAuto": {
+    "message": "自動"
+  },
+  "langEnglish": {
+    "message": "English"
+  },
+  "langChineseSimplified": {
+    "message": "简体中文"
+  },
+  "langJapanese": {
+    "message": "日本語"
+  },
+  "langKorean": {
+    "message": "한국어"
+  }
+}
