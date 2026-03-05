@@ -20,6 +20,8 @@ function setTitle(id, messageKey) {
 setText("saveKey", "saveBtn")
 setText("saveTag", "saveBtn")
 
+setText("supportedMemosVersion", "supportedMemosVersion")
+
 setPlaceholder("apiUrl", "placeApiUrl")
 setPlaceholder("apiTokens", "placeApiTokens")
 setPlaceholder("content", "placeContent")
