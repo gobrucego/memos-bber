@@ -2,7 +2,7 @@
    "manifest_version": 3,
    "name": "__MSG_extName__",
    "default_locale": "en",
-   "version": "2026.03.05",
+   "version": "2026.03.06",
    "version_name": "Supports 0.24.0 to the latest version",
    "action": {
       "default_popup": "popup.html",

@@ -28,7 +28,7 @@ chrome.contextMenus.onClicked.addListener(info => {
     let tempCont=''
     switch(info.menuItemId){
       case 'Memos-send-selection':
-        tempCont = info.selectionText + '\n'
+        tempCont = info.selectionText + '\n' + `[Reference Link](${info.linkUrl || info.pageUrl})` + '\n'
         break
       case 'Memos-send-link':
         tempCont = (info.linkUrl || info.pageUrl) + '\n'
