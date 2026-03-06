@@ -21,7 +21,7 @@
       "message": "保存"
    },
    "supportedMemosVersion": {
-      "message": "兼容 Memos v0.24.0+（已测试：0.24.0 / 0.25.0 / 0.26.x）"
+      "message": "兼容 Memos v0.18.0 - 0.26.x"
    },
    "placeApiUrl":{
       "message": "请填入 Memos 主页网址"

@@ -45,6 +45,8 @@
       { method: 'GET', path: 'api/v1/auth/me', uiPath: 'memos' },
       // v0.25: session-based auth service still accepts bearer tokens and returns { user: ... }.
       { method: 'GET', path: 'api/v1/auth/sessions/current', uiPath: 'memos' },
+      // v0.20: current user endpoint.
+      { method: 'GET', path: 'api/v1/user/me', uiPath: 'm' },
       { method: 'POST', path: 'api/v1/auth/status', uiPath: 'm' },
       { method: 'GET', path: 'api/v1/auth/status', uiPath: 'm' }
     ]

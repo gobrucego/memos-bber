@@ -21,7 +21,7 @@
     "message": "저장"
   },
   "supportedMemosVersion": {
-    "message": "Memos v0.24.0+ 호환 (테스트됨: 0.24.0 / 0.25.0 / 0.26.x)"
+    "message": "Memos v0.18.0 - 0.26.x 호환"
   },
   "placeApiUrl": {
     "message": "Memos 사이트 URL"

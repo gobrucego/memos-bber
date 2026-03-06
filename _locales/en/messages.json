@@ -21,7 +21,7 @@
       "message": "Save"
    },
    "supportedMemosVersion": {
-      "message": "Compatible with Memos v0.24.0+ (tested: 0.24.0 / 0.25.0 / 0.26.x)"
+      "message": "Compatible with Memos v0.18.0 - 0.26.x"
    },
    "placeApiUrl":{
       "message": "Memos site URL"
