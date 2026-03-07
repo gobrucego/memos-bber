@@ -86,6 +86,7 @@ function applyStaticI18n() {
 	setText('lockPublic', 'lockPublic')
 
 	setText('content_submit_text', 'submitBtn')
+	setText('fullscreen', 'fullscreenBtn')
 
 	setPlaceholder('hideInput', 'placeHideInput')
 	setPlaceholder('showInput', 'placeShowInput')
@@ -111,6 +112,8 @@ function applyStaticI18n() {
 	setTitle('search', 'tipSearch')
 	setTitle('lock', 'tipVisibility')
 	setTitle('content_submit_text', 'tipSend')
+	setTitle('fullscreen', 'tipFullscreen')
+	setTitle('editor-resize-handle', 'tipResize')
 }
 
 async function setUiLanguage(nextLang, { persist = true } = {}) {

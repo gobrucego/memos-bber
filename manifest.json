@@ -21,6 +21,8 @@
     },
    "permissions": [
       "tabs",
+      "scripting",
+      "windows",
       "storage",
       "activeTab",
       "contextMenus"

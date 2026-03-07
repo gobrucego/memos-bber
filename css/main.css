@@ -48,6 +48,37 @@ a{color: #555;}
     transition-timing-function: cubic-bezier(.4,0,.2,1);
     transition-duration: .15s;
 }
+.memo-editor{
+    position: relative;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    contain: layout paint;
+}
+
+#editor-resize-handle{
+    position: absolute;
+    right: .35rem;
+    bottom: .35rem;
+    width: 14px;
+    height: 14px;
+    border-right: 2px solid #bbb;
+    border-bottom: 2px solid #bbb;
+    cursor: nwse-resize;
+    opacity: .8;
+    user-select: none;
+    touch-action: none;
+}
+
+#editor-resize-handle:hover{
+    opacity: 1;
+    border-right-color: #888;
+    border-bottom-color: #888;
+}
+
+.body.fullscreen #editor-resize-handle{
+    display: none;
+}
 .random-item{
     border: 1px solid rgb(229,231,235);
     color: #666;
@@ -66,6 +97,25 @@ a{color: #555;}
     overflow-wrap: anywhere;
     word-break: normal;}
 .btns-container{text-align:right;}
+.memo-editor #fullscreen{
+    position: absolute;
+    right: .5rem;
+    top: .5rem;
+    z-index: 2;
+    border: 1px solid rgb(229,231,235);
+    border-radius: .25rem;
+    background-color: rgb(255,255,255);
+    color: #666;
+    font-size: .75rem;
+    line-height: 1.5rem;
+    padding: 0 .4rem;
+    cursor: pointer;
+    opacity: .9;
+}
+.memo-editor #fullscreen:hover{
+    opacity: 1;
+    background-color: rgb(243,244,246);
+}
 .common-editor-inputer,input.inputer{
     font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
     height: 100%;
@@ -77,9 +127,24 @@ a{color: #555;}
     background-color: transparent;
     font-size: 1rem;
     min-height: 40px;
-    max-height: 400px;
     scrollbar-width: none;
     line-height: 1.5rem;
+}
+
+.common-editor-inputer{
+    padding-top: 1.8rem;
+    padding-right: 3.2rem;
+}
+
+.body.fullscreen{
+    min-width: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.body.fullscreen .common-editor-inputer{
+    min-height: 60vh;
 }
 input.inputer{border-bottom: 1px solid #ccc;width:75%;}
 
@@ -248,9 +313,7 @@ input.inputer{border-bottom: 1px solid #ccc;width:75%;}
     padding: .15rem .35rem;
     cursor: pointer;
 }
-#blog_info{
 
-}
 
 .tip{
     margin-left: 36%;

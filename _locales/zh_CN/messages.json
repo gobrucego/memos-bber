@@ -163,5 +163,14 @@
    },
    "langKorean": {
       "message": "한국어"
+   },
+   "fullscreenBtn": {
+      "message": "全屏"
+   },
+   "tipFullscreen": {
+      "message": "全屏编辑"
+   },
+   "tipResize": {
+      "message": "拖拽缩放编辑框（最小为默认大小）"
    }
 }

@@ -1,6 +1,136 @@
 dayjs.extend(window.dayjs_plugin_relativeTime)
 let currentMemoLock = ''
 
+function isFullscreenMode() {
+  try {
+    const params = new URLSearchParams(window.location.search || '')
+    return params.get('mode') === 'full'
+  } catch (_) {
+    return false
+  }
+}
+
+function openFullscreenTab() {
+  try {
+    const url = chrome.runtime.getURL('popup.html?mode=full')
+    chrome.tabs.create({ url })
+  } catch (_) {
+    // best-effort only
+  }
+}
+
+function initProportionalEditorResize() {
+  try {
+    if (isFullscreenMode()) return
+
+    const editor = document.querySelector('.memo-editor')
+    const tools = document.querySelector('.common-tools-wrapper')
+    const handle = document.getElementById('editor-resize-handle')
+    if (!editor || !tools || !handle) return
+
+    const safety = 8
+    const initialRect = editor.getBoundingClientRect()
+    const baseW = Math.ceil(initialRect.width)
+    const baseH = Math.ceil(initialRect.height)
+
+    // Lock the base size. Scaling will be applied by setting width/height.
+    editor.style.width = `${baseW}px`
+    editor.style.height = `${baseH}px`
+    editor.style.minWidth = `${baseW}px`
+    editor.style.minHeight = `${baseH}px`
+
+    let maxScale = 1
+    const computeMaxScale = () => {
+      // In popup mode, allow scaling up to Chrome's max popup size.
+      // Do not clamp by current window.innerWidth/innerHeight, otherwise the popup can't grow to the max.
+      const viewportW = 800
+      const viewportH = 600
+
+      const editorRect = editor.getBoundingClientRect()
+      const toolsRect = tools.getBoundingClientRect()
+      const toolsStyle = window.getComputedStyle(tools)
+      const gap = parseFloat(toolsStyle.marginTop || '0') || 0
+
+      const availW = Math.max(0, viewportW - safety - editorRect.left)
+      const availH = Math.max(0, viewportH - safety - toolsRect.height - editorRect.top - gap)
+
+      const scaleW = baseW > 0 ? availW / baseW : 1
+      const scaleH = baseH > 0 ? availH / baseH : 1
+      maxScale = Math.max(1, Math.min(scaleW, scaleH))
+    }
+
+    computeMaxScale()
+    window.addEventListener('resize', computeMaxScale)
+
+    let dragging = false
+    let startX = 0
+    let startY = 0
+    let startScale = 1
+    let rafId = 0
+    let pendingScale = null
+
+    const readCurrentScale = () => {
+      const w = parseFloat(editor.style.width || '')
+      const h = parseFloat(editor.style.height || '')
+      const sw = baseW > 0 && Number.isFinite(w) ? w / baseW : 1
+      const sh = baseH > 0 && Number.isFinite(h) ? h / baseH : 1
+      return Math.max(1, sw, sh)
+    }
+
+    const applyScale = (scale) => {
+      const s = Math.max(1, Math.min(maxScale, scale))
+      editor.style.width = `${Math.round(baseW * s)}px`
+      editor.style.height = `${Math.round(baseH * s)}px`
+    }
+
+    const scheduleApply = () => {
+      if (rafId) return
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0
+        if (pendingScale == null) return
+        const s = pendingScale
+        pendingScale = null
+        applyScale(s)
+      })
+    }
+
+    handle.addEventListener('pointerdown', (ev) => {
+      dragging = true
+      startX = ev.clientX
+      startY = ev.clientY
+      startScale = readCurrentScale()
+      computeMaxScale()
+      try { handle.setPointerCapture(ev.pointerId) } catch (_) {}
+      ev.preventDefault()
+    })
+
+    handle.addEventListener('pointermove', (ev) => {
+      if (!dragging) return
+      const dx = ev.clientX - startX
+      const dy = ev.clientY - startY
+
+      // Proportional scale based on diagonal length for smoother, more linear feel.
+      const diag0 = Math.hypot(baseW, baseH)
+      const targetW = baseW * startScale + dx
+      const targetH = baseH * startScale + dy
+      const diag1 = Math.hypot(targetW, targetH)
+      const next = diag0 > 0 ? diag1 / diag0 : startScale
+
+      pendingScale = next
+      scheduleApply()
+    })
+
+    const endDrag = () => {
+      dragging = false
+    }
+
+    handle.addEventListener('pointerup', endDrag)
+    handle.addEventListener('pointercancel', endDrag)
+  } catch (_) {
+    // best-effort only
+  }
+}
+
 function msg(key) {
   if (typeof window.t === 'function') return window.t(key)
   return chrome.i18n.getMessage(key) || ''
@@ -56,6 +186,10 @@ function updateLockNowText(lockType) {
 }
 
 applyDayjsLocaleByUiLanguage(typeof window.getUiLanguage === 'function' ? window.getUiLanguage() : 'auto')
+
+if (isFullscreenMode()) {
+  document.body.classList.add('fullscreen')
+}
 
 window.addEventListener('i18n:changed', (ev) => {
   applyDayjsLocaleByUiLanguage(ev && ev.detail ? ev.detail.lang : 'auto')
@@ -143,11 +277,14 @@ get_info(function (info) {
     //打开的时候就是上传图片
     uploadImage(info.open_content)
   } else {
-    $("textarea[name=text]").val(info.open_content)
+    const $textarea = $("textarea[name=text]")
+    $textarea.val(info.open_content)
+    focusTextareaToEnd($textarea)
   }
 
   relistNow = Array.isArray(info.resourceIdList) ? info.resourceIdList : []
   renderUploadList(relistNow)
+  initProportionalEditorResize()
   //从localstorage 里面读取数据
   setTimeout(get_info, 1)
 })
@@ -161,7 +298,7 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
   renderUploadList(relistNow)
 })
 
-$("textarea[name=text]").focus()
+// focus is handled after textarea content is set
 
 //监听输入结束，保存未发送内容到本地
 $("textarea[name=text]").blur(function () {
@@ -174,6 +311,11 @@ $("textarea[name=text]").on('keydown', function (ev) {
   if (ev.code === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
     $('#content_submit_text').click()
   }
+})
+
+$('#fullscreen').on('click', function () {
+  if (isFullscreenMode()) return
+  openFullscreenTab()
 })
 
 //监听拖拽事件，实现拖拽到窗口上传图片
@@ -237,6 +379,20 @@ function escapeHtml(input) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+}
+
+function focusTextareaToEnd($textarea) {
+  try {
+    const el = $textarea && $textarea[0]
+    if (!el) return
+    el.focus()
+    const len = typeof el.value === 'string' ? el.value.length : 0
+    if (typeof el.setSelectionRange === 'function') {
+      el.setSelectionRange(len, len)
+    }
+  } catch (_) {
+    // best-effort only
+  }
 }
 
 function buildV1ResourceStreamUrl(info, resource) {

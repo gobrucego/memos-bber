@@ -163,5 +163,14 @@
   },
   "langKorean": {
     "message": "한국어"
+  },
+  "fullscreenBtn": {
+    "message": "전체화면"
+  },
+  "tipFullscreen": {
+    "message": "전체화면 편집"
+  },
+  "tipResize": {
+    "message": "드래그로 확대/축소(최소: 기본 크기)"
   }
 }
