@@ -51,9 +51,17 @@ a{color: #555;}
 .memo-editor{
     position: relative;
     resize: none;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
-    contain: layout paint;
+    contain: layout;
+}
+
+.memo-editor-header{
+    position: sticky;
+    top: .5rem;
+    z-index: 3;
+    height: 0;
+    display: block;
 }
 
 #editor-resize-handle{
@@ -79,6 +87,10 @@ a{color: #555;}
 .body.fullscreen #editor-resize-handle{
     display: none;
 }
+
+.body.fullscreen #fullscreen{
+    display: none;
+}
 .random-item{
     border: 1px solid rgb(229,231,235);
     color: #666;
@@ -99,18 +111,25 @@ a{color: #555;}
 .btns-container{text-align:right;}
 .memo-editor #fullscreen{
     position: absolute;
-    right: .5rem;
-    top: .5rem;
+    right: 0;
+    top: 0;
     z-index: 2;
     border: 1px solid rgb(229,231,235);
     border-radius: .25rem;
     background-color: rgb(255,255,255);
     color: #666;
     font-size: .75rem;
-    line-height: 1.5rem;
-    padding: 0 .4rem;
+    line-height: 1;
+    padding: .25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     opacity: .9;
+}
+
+.memo-editor #fullscreen svg{
+    display: block;
 }
 .memo-editor #fullscreen:hover{
     opacity: 1;
@@ -132,8 +151,10 @@ a{color: #555;}
 }
 
 .common-editor-inputer{
-    padding-top: 1.8rem;
-    padding-right: 3.2rem;
+    padding-right: 1.5rem;
+    height: auto;
+    display: block;
+    box-sizing: border-box;
 }
 
 .body.fullscreen{

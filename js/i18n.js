@@ -86,7 +86,8 @@ function applyStaticI18n() {
 	setText('lockPublic', 'lockPublic')
 
 	setText('content_submit_text', 'submitBtn')
-	setText('fullscreen', 'fullscreenBtn')
+	const fullscreen = document.getElementById('fullscreen')
+	if (fullscreen) fullscreen.setAttribute('aria-label', t('tipFullscreen'))
 
 	setPlaceholder('hideInput', 'placeHideInput')
 	setPlaceholder('showInput', 'placeShowInput')

@@ -158,14 +158,11 @@
   "langChineseSimplified": {
     "message": "简体中文"
   },
-  "langJapanese": {
+    "langJapanese": {
     "message": "日本語"
   },
   "langKorean": {
     "message": "한국어"
-  },
-  "fullscreenBtn": {
-    "message": "전체화면"
   },
   "tipFullscreen": {
     "message": "전체화면 편집"
