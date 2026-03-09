@@ -39,6 +39,8 @@ function initProportionalEditorResize() {
     editor.style.minWidth = `${baseW}px`
     editor.style.minHeight = `${baseH}px`
 
+    const storageKey = 'popupEditorScale'
+
     let maxScale = 1
     const computeMaxScale = () => {
       // In popup mode, allow scaling up to Chrome's max popup size.
@@ -69,6 +71,15 @@ function initProportionalEditorResize() {
     let rafId = 0
     let pendingScale = null
 
+    const parseScale = (raw) => {
+      const s = typeof raw === 'number' && Number.isFinite(raw)
+        ? raw
+        : typeof raw === 'string' && raw.trim() !== '' && !Number.isNaN(Number(raw))
+          ? Number(raw)
+          : 1
+      return s > 0 ? s : 1
+    }
+
     const readCurrentScale = () => {
       const w = parseFloat(editor.style.width || '')
       const h = parseFloat(editor.style.height || '')
@@ -81,6 +92,47 @@ function initProportionalEditorResize() {
       const s = Math.max(1, Math.min(maxScale, scale))
       editor.style.width = `${Math.round(baseW * s)}px`
       editor.style.height = `${Math.round(baseH * s)}px`
+    }
+
+    const applyScaleInstant = (scale) => {
+      // In case CSS transitions exist (or get reintroduced), keep restores immediate.
+      const prevTransition = editor.style.transition
+      editor.style.transition = 'none'
+      applyScale(scale)
+      window.requestAnimationFrame(function () {
+        editor.style.transition = prevTransition
+      })
+    }
+
+    // Restore previously saved scale synchronously (localStorage) first.
+    // This makes the popup *feel* synchronous because it can apply before async chrome.storage returns.
+    let restoredFromLocal = false
+    let localScale = 1
+    try {
+      const raw = window.localStorage ? window.localStorage.getItem(storageKey) : null
+      const s = parseScale(raw)
+      if (s && s !== 1) {
+        localScale = s
+        restoredFromLocal = true
+        applyScaleInstant(s)
+      }
+    } catch (_) {
+      // ignore
+    }
+
+    // Restore from chrome.storage.sync (best-effort) and keep localStorage in sync.
+    try {
+      chrome.storage.sync.get({ [storageKey]: 1 }, function (items) {
+        const raw = items ? items[storageKey] : 1
+        const s = parseScale(raw)
+        const shouldApply = !restoredFromLocal || Math.abs(s - localScale) > 1e-6
+        if (shouldApply) applyScaleInstant(s)
+        try {
+          if (window.localStorage) window.localStorage.setItem(storageKey, String(s))
+        } catch (_) {}
+      })
+    } catch (_) {
+      // ignore
     }
 
     const scheduleApply = () => {
@@ -122,6 +174,25 @@ function initProportionalEditorResize() {
 
     const endDrag = () => {
       dragging = false
+
+      // Flush any pending RAF update before persisting.
+      if (pendingScale != null) {
+        applyScale(pendingScale)
+        pendingScale = null
+      }
+
+      // Persist current scale (best-effort).
+      try {
+        const s = readCurrentScale()
+        if (typeof s === 'number' && Number.isFinite(s)) {
+          try {
+            if (window.localStorage) window.localStorage.setItem(storageKey, String(s))
+          } catch (_) {}
+          chrome.storage.sync.set({ [storageKey]: s })
+        }
+      } catch (_) {
+        // ignore
+      }
     }
 
     handle.addEventListener('pointerup', endDrag)

@@ -44,9 +44,6 @@ a{color: #555;}
     background-color: rgb(255,255,255);
     margin-top:0.8rem;
     padding: 0.6rem;
-    transition-property: all;
-    transition-timing-function: cubic-bezier(.4,0,.2,1);
-    transition-duration: .15s;
 }
 .memo-editor{
     position: relative;
