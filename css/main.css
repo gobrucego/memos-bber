@@ -20,7 +20,7 @@ input:focus::placeholder ,.common-editor-inputer:focus::placeholder {
 }
 
 .body{
-    min-width:460px;
+    min-width:360px;
     background-color: #f6f5f4;
     padding:0 1rem 1rem;
     font-family: eafont,PingFang SC,Hiragino Sans GB,Microsoft YaHei,STHeiti,WenQuanYi Micro Hei,Helvetica,Arial,sans-serif;
@@ -30,37 +30,6 @@ input:focus::placeholder ,.common-editor-inputer:focus::placeholder {
     position: relative;
 }
 
-@media (max-width: 480px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
-    .body{
-        min-width: 0;
-    }
-
-    .common-tools-wrapper {
-        flex-wrap: wrap;
-        align-items: stretch;
-        gap: .75rem .5rem;
-    }
-
-    .common-tools-container {
-        flex: 1 1 100%;
-        min-width: 0;
-        flex-wrap: wrap;
-    }
-
-    .common-tools-container .mr-5 {
-        margin-bottom: .5rem;
-    }
-
-    .btns-container {
-        flex: 1 1 100%;
-        text-align: right;
-    }
-
-    #content_submit_text {
-        min-width: 3rem;
-        min-height: 2.5rem;
-    }
-}
 a{color: #555;}
 .title{
     width: 100px;
