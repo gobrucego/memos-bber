@@ -5,6 +5,7 @@ Chrome 应用商店：<https://chrome.google.com/webstore/detail/memos-bber/cbhj
 一个通过浏览器插件发布 [Memos](https://usememos.com/) 的插件。基于 iSpeak-bber 修改，原作者为 [DreamyTZK](https://www.antmoe.com/)。
 
 ## 更新日志
+- 20260322 适配移动端竖屏窗口
 - 20260310 记忆拖拽窗口大小,移除拖拽窗口动画
 - 20260309 右键发送选中文本保持原格式,增加全屏和窗口放大功能
 ### 20260308 向前兼容到0.15.0,可能再往前也行,只测试到0.15.0
