@@ -322,15 +322,77 @@ input.inputer{border-bottom: 1px solid #ccc;width:75%;}
     top: .55rem;
 }
 
-.lang-select{
-    border: 1px solid rgb(229,231,235);
-    border-radius: .25rem;
-    background-color: rgb(255,255,255);
+.lang-toggle{
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
     color: #666;
+    min-width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 0;
+    opacity: .6;
+}
+
+.lang-toggle:hover,
+.lang-toggle[aria-expanded="true"]{
+    background-color: transparent;
+    color: #666;
+    opacity: 1;
+}
+
+.lang-toggle-text{
+    display: inline-block;
+    min-width: 24px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 24px;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.lang-menu{
+    position: absolute;
+    top: calc(100% + .35rem);
+    right: 0;
+    min-width: 8rem;
+    padding: .25rem;
+    border: 1px solid rgb(229,231,235);
+    border-radius: .5rem;
+    background-color: rgb(255,255,255);
+    box-shadow: 0 8px 24px rgba(15,23,42,.12);
+    z-index: 10;
+}
+
+.lang-menu.hidden{
+    display: none;
+}
+
+.lang-menu-item{
+    width: 100%;
+    display: block;
+    text-align: left;
+    padding: .4rem .5rem;
+    border-radius: .35rem;
+    background: transparent;
+    color: #555;
     font-size: .75rem;
     line-height: 1.25rem;
-    padding: .15rem .35rem;
     cursor: pointer;
+}
+
+.lang-menu-item:hover{
+    background-color: rgb(243,244,246);
+}
+
+.lang-menu-item.active{
+    background-color: rgb(220,252,231);
+    color: rgb(22,101,52);
+    font-weight: 600;
 }
 
 

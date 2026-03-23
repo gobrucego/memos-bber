@@ -47,6 +47,36 @@ function formatSubstitutions(message, substitutions) {
 let currentUiLanguage = 'auto'
 let overrideMessages = null
 
+function getLanguageToggleLabel(lang) {
+	if (lang === 'en') return 'EN'
+	if (lang === 'zh_CN') return '中'
+	if (lang === 'ja') return '日'
+	if (lang === 'ko') return '한'
+	return 'A'
+}
+
+function syncLanguageToggleText(lang) {
+	const text = document.getElementById('langToggleText')
+	if (text) text.textContent = getLanguageToggleLabel(lang)
+}
+
+function syncLanguageMenuState(lang) {
+	const items = document.querySelectorAll('.lang-menu-item')
+	items.forEach((item) => {
+		const isActive = item.getAttribute('data-lang') === lang
+		item.classList.toggle('active', isActive)
+		item.setAttribute('aria-checked', isActive ? 'true' : 'false')
+	})
+}
+
+function setLanguageMenuOpen(isOpen) {
+	const toggle = document.getElementById('langToggle')
+	const menu = document.getElementById('langMenu')
+	if (!toggle || !menu) return
+	toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+	menu.classList.toggle('hidden', !isOpen)
+}
+
 function t(key, substitutions) {
 	const msg = overrideMessages && overrideMessages[key] && overrideMessages[key].message
 	if (typeof msg === 'string' && msg.length > 0) {
@@ -100,7 +130,9 @@ function applyStaticI18n() {
 	setText('langOptionZhCN', 'langChineseSimplified')
 	setText('langOptionJa', 'langJapanese')
 	setText('langOptionKo', 'langKorean')
-	setTitle('langSelect', 'tipLanguage')
+	setTitle('langToggle', 'tipLanguage')
+	const langToggle = document.getElementById('langToggle')
+	if (langToggle) langToggle.setAttribute('aria-label', t('tipLanguage'))
 
 	// Native hover tooltips (title)
 	setTitle('opensite', 'tipOpenSite')
@@ -122,26 +154,47 @@ async function setUiLanguage(nextLang, { persist = true } = {}) {
 	currentUiLanguage = lang
 	overrideMessages = await loadLocaleMessages(lang)
 	applyStaticI18n()
-
-	const select = document.getElementById('langSelect')
-	if (select && select.value !== lang) select.value = lang
+	syncLanguageToggleText(lang)
+	syncLanguageMenuState(lang)
 
 	if (persist) await storageSyncSet({ [UI_LANGUAGE_STORAGE_KEY]: lang })
 	window.dispatchEvent(new CustomEvent('i18n:changed', { detail: { lang } }))
 }
 
 async function initLanguageSwitcher() {
-	const select = document.getElementById('langSelect')
-	if (select) {
-		select.addEventListener('change', async () => {
-			await setUiLanguage(select.value)
+	const switcher = document.getElementById('lang_switcher')
+	const toggle = document.getElementById('langToggle')
+	const langItems = document.querySelectorAll('.lang-menu-item')
+
+	if (toggle) {
+		toggle.addEventListener('click', (event) => {
+			event.stopPropagation()
+			const isOpen = toggle.getAttribute('aria-expanded') === 'true'
+			setLanguageMenuOpen(!isOpen)
 		})
 	}
 
-	const items = await storageSyncGet({ [UI_LANGUAGE_STORAGE_KEY]: 'auto' })
-	const stored = normalizeUiLanguage(items[UI_LANGUAGE_STORAGE_KEY])
-	if (select) select.value = stored
+	langItems.forEach((item) => {
+		item.addEventListener('click', async (event) => {
+			event.stopPropagation()
+			setLanguageMenuOpen(false)
+			await setUiLanguage(item.getAttribute('data-lang'))
+		})
+	})
+
+	document.addEventListener('click', (event) => {
+		if (!switcher || switcher.contains(event.target)) return
+		setLanguageMenuOpen(false)
+	})
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') setLanguageMenuOpen(false)
+	})
+
+	const storedItems = await storageSyncGet({ [UI_LANGUAGE_STORAGE_KEY]: 'auto' })
+	const stored = normalizeUiLanguage(storedItems[UI_LANGUAGE_STORAGE_KEY])
 	await setUiLanguage(stored, { persist: false })
+	setLanguageMenuOpen(false)
 }
 
 window.t = t
