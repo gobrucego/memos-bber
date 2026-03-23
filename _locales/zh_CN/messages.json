@@ -33,22 +33,22 @@
       "message": "现在的想法是..."
    },
    "lockPrivate":{
-      "message": "仅自己可见"
+      "message": "私有"
    },
    "lockProtected":{
-      "message": "登录用户可见"
+      "message": "登录可见"
    },
    "lockPublic":{
-      "message": "所有人可见"
+      "message": "公开"
    },
    "submitBtn":{
       "message": "记下"
    },
    "placeHideInput":{
-      "message": "默认“仅自己可见”标签名"
+      "message": "默认“私有”标签名"
    },
    "placeShowInput":{
-      "message": "默认“所有人可见”标签名"
+      "message": "默认“公开”标签名"
    },
    "picDrag":{
       "message": "拖拽到窗口上传该图片"
