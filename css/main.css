@@ -52,6 +52,8 @@ a{color: #555;}
     overflow: visible;
     box-sizing: border-box;
     contain: layout;
+    display: flex;
+    flex-direction: column;
 }
 
 .memo-editor-header{
@@ -150,7 +152,8 @@ a{color: #555;}
 
 .common-editor-inputer{
     padding-right: 1.5rem;
-    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
     display: block;
     box-sizing: border-box;
 }
