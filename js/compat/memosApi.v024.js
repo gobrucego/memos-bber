@@ -11,12 +11,19 @@
       return Number(user.id)
     }
 
+    if (typeof user.username === 'string' && user.username.trim() !== '') {
+      return user.username.trim()
+    }
+
     const name = user.name || (user.user && user.user.name)
     if (typeof name === 'string') {
       const m = name.match(/\busers\/(\d+)\b/)
       if (m) return Number(m[1])
       const last = name.split('/').pop()
-      if (last && !Number.isNaN(Number(last))) return Number(last)
+      if (last) {
+        if (!Number.isNaN(Number(last))) return Number(last)
+        if (last.trim() !== '') return last.trim()
+      }
     }
 
     return null
@@ -88,7 +95,7 @@
     // the full set (including private), which affects tag extraction.
     // Newer versions may not expose the user-scoped endpoint, so we fallback by 404/405.
     const urlUserScoped = info.userid
-      ? info.apiUrl + 'api/v1/users/' + info.userid + '/memos' + qs
+      ? info.apiUrl + 'api/v1/users/' + encodeURIComponent(String(info.userid)) + '/memos' + qs
       : null
     const urlGlobal = info.apiUrl + 'api/v1/memos' + qs
 
