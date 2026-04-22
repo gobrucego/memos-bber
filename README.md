@@ -8,12 +8,14 @@
 
 ## 打包
 
-仓库内置了 GitHub Actions 工作流 [package-extensions.yml](.github/workflows/package-extensions.yml)，支持手动触发或在推送 `v*` 标签时自动打包。
+仓库内置了 GitHub Actions 工作流 [package-extensions.yml](.github/workflows/package-extensions.yml)，支持手动触发或在推送 `v*` 标签时自动打包并发布到 GitHub Releases。
 
-- `store-packages`：商店上传用文件，包含 Chrome 的 zip 包和 Firefox 的 xpi 包。
-- `offline-packages`：离线分发用文件，包含 Chrome 的 zip 包和 Firefox 的 xpi 包。
+- 推送 `v*` 标签时：自动把 Chrome 的 zip 包和 Firefox 的 xpi 包上传为对应 Release 的 assets。
+- 手动触发时：需要填写 `release_tag`，工作流会把产物直接上传到这个 tag 对应的 Release。
+- 下载时拿到的是文件本体，不再通过 Actions artifact 额外包一层 zip。
+- 打包源码固定来自 `main` 分支；`tag` 只用于决定上传到哪个 Release。
 
-说明：Chrome 的离线包用于解压后在开发者模式中“加载已解压的扩展程序”；Firefox 的离线包为未签名 xpi，适合临时附加组件或自行签名后的分发场景。
+说明：Chrome 的 zip 包可用于商店上传，Firefox 的 xpi 包可用于 AMO 上传或离线分发。工作流已显式启用 Node 24 运行 JavaScript actions，并使用新的 `actions/checkout@v5`。
 
 ## 更新日志
 - 20260422 调整发送设置,支持仅发送附件

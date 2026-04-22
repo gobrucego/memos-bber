@@ -1,7 +1,14 @@
 name: Package Extensions
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag used for direct asset upload, for example v2026.04.23
+        required: true
   push:
     tags:
       - 'v*'
@@ -10,10 +17,20 @@ jobs:
   package:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Resolve release tag
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag='${{ github.event.inputs.release_tag }}'
+          else
+            tag='${{ github.ref_name }}'
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Read extension versions
         id: versions
@@ -35,28 +52,28 @@ jobs:
 
       - name: Build package files
         run: |
-          mkdir -p dist/store dist/offline
+          mkdir -p dist/release
 
           pushd chrome >/dev/null
-          zip -qr "../dist/store/memos-bber-chrome-webstore-${{ steps.versions.outputs.chrome_version }}.zip" .
-          zip -qr "../dist/offline/memos-bber-chrome-offline-${{ steps.versions.outputs.chrome_version }}.zip" .
+          zip -qr "../dist/release/memos-bber-chrome-${{ steps.versions.outputs.chrome_version }}.zip" .
           popd >/dev/null
 
           pushd firefox >/dev/null
-          zip -qr "../dist/store/memos-bber-firefox-amo-${{ steps.versions.outputs.firefox_version }}.xpi" .
-          zip -qr "../dist/offline/memos-bber-firefox-offline-${{ steps.versions.outputs.firefox_version }}.xpi" .
+          zip -qr "../dist/release/memos-bber-firefox-${{ steps.versions.outputs.firefox_version }}.xpi" .
           popd >/dev/null
 
-      - name: Upload store packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: store-packages
-          path: dist/store/*
-          if-no-files-found: error
+      - name: Publish release assets
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          tag='${{ steps.release.outputs.tag }}'
+          gh release view "$tag" >/dev/null 2>&1 || \
+            gh release create "$tag" --title "$tag" --notes "Automated extension packages"
+          gh release upload "$tag" dist/release/* --clobber
 
-      - name: Upload offline packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: offline-packages
-          path: dist/offline/*
-          if-no-files-found: error
+      - name: Write workflow summary
+        run: |
+          tag='${{ steps.release.outputs.tag }}'
+          echo "## Release assets" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Chrome: https://github.com/${{ github.repository }}/releases/download/$tag/memos-bber-chrome-${{ steps.versions.outputs.chrome_version }}.zip" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Firefox: https://github.com/${{ github.repository }}/releases/download/$tag/memos-bber-firefox-${{ steps.versions.outputs.firefox_version }}.xpi" >> "$GITHUB_STEP_SUMMARY"
