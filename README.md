@@ -1,7 +1,7 @@
 ## 说明
 
 - Chrome 应用商店：https://chrome.google.com/webstore/detail/memos-bber/cbhjebjfccgchgbmfbobjmebjjckgofe/
-- FireFox 应用商店: 等待上架
+- (审核中)FireFox 应用商店: https://addons.mozilla.org/zh-CN/firefox/addon/memos-bber/
 - edge 应用商店: 等待开发
 
 一个通过浏览器插件发布 [Memos](https://usememos.com/) 的插件。基于 iSpeak-bber 修改，原作者为 [DreamyTZK](https://www.antmoe.com/)。
