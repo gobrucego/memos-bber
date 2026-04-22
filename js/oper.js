@@ -51,131 +51,6 @@ function initProportionalEditorResize() {
       const editorRect = editor.getBoundingClientRect()
       const toolsRect = tools.getBoundingClientRect()
       const toolsStyle = window.getComputedStyle(tools)
-      const gap = parseFloat(toolsStyle.marginTop || '0') || 0
-
-      const availW = Math.max(0, viewportW - safety - editorRect.left)
-      const availH = Math.max(0, viewportH - safety - toolsRect.height - editorRect.top - gap)
-
-      const scaleW = baseW > 0 ? availW / baseW : 1
-      const scaleH = baseH > 0 ? availH / baseH : 1
-      maxScale = Math.max(1, Math.min(scaleW, scaleH))
-    }
-
-    computeMaxScale()
-    window.addEventListener('resize', computeMaxScale)
-
-    let dragging = false
-    let startX = 0
-    let startY = 0
-    let startScale = 1
-    let rafId = 0
-    let pendingScale = null
-
-    const parseScale = (raw) => {
-      const s = typeof raw === 'number' && Number.isFinite(raw)
-        ? raw
-        : typeof raw === 'string' && raw.trim() !== '' && !Number.isNaN(Number(raw))
-          ? Number(raw)
-          : 1
-      return s > 0 ? s : 1
-    }
-
-    const readCurrentScale = () => {
-      const w = parseFloat(editor.style.width || '')
-      const h = parseFloat(editor.style.height || '')
-      const sw = baseW > 0 && Number.isFinite(w) ? w / baseW : 1
-      const sh = baseH > 0 && Number.isFinite(h) ? h / baseH : 1
-      return Math.max(1, sw, sh)
-    }
-
-    const applyScale = (scale) => {
-      const s = Math.max(1, Math.min(maxScale, scale))
-      editor.style.width = `${Math.round(baseW * s)}px`
-      editor.style.height = `${Math.round(baseH * s)}px`
-    }
-
-    const applyScaleInstant = (scale) => {
-      // In case CSS transitions exist (or get reintroduced), keep restores immediate.
-      const prevTransition = editor.style.transition
-      editor.style.transition = 'none'
-      applyScale(scale)
-      window.requestAnimationFrame(function () {
-        editor.style.transition = prevTransition
-      })
-    }
-
-    // Restore previously saved scale synchronously (localStorage) first.
-    // This makes the popup *feel* synchronous because it can apply before async chrome.storage returns.
-    let restoredFromLocal = false
-    let localScale = 1
-    try {
-      const raw = window.localStorage ? window.localStorage.getItem(storageKey) : null
-      const s = parseScale(raw)
-      if (s && s !== 1) {
-        localScale = s
-        restoredFromLocal = true
-        applyScaleInstant(s)
-      }
-    } catch (_) {
-      // ignore
-    }
-
-    // Restore from chrome.storage.sync (best-effort) and keep localStorage in sync.
-    try {
-      chrome.storage.sync.get({ [storageKey]: 1 }, function (items) {
-        const raw = items ? items[storageKey] : 1
-        const s = parseScale(raw)
-        const shouldApply = !restoredFromLocal || Math.abs(s - localScale) > 1e-6
-        if (shouldApply) applyScaleInstant(s)
-        try {
-          if (window.localStorage) window.localStorage.setItem(storageKey, String(s))
-        } catch (_) {}
-      })
-    } catch (_) {
-      // ignore
-    }
-
-    const scheduleApply = () => {
-      if (rafId) return
-      rafId = window.requestAnimationFrame(() => {
-        rafId = 0
-        if (pendingScale == null) return
-        const s = pendingScale
-        pendingScale = null
-        applyScale(s)
-      })
-    }
-
-    handle.addEventListener('pointerdown', (ev) => {
-      dragging = true
-      startX = ev.clientX
-      startY = ev.clientY
-      startScale = readCurrentScale()
-      computeMaxScale()
-      try { handle.setPointerCapture(ev.pointerId) } catch (_) {}
-      ev.preventDefault()
-    })
-
-    handle.addEventListener('pointermove', (ev) => {
-      if (!dragging) return
-      const dx = ev.clientX - startX
-      const dy = ev.clientY - startY
-
-      // Proportional scale based on diagonal length for smoother, more linear feel.
-      const diag0 = Math.hypot(baseW, baseH)
-      const targetW = baseW * startScale + dx
-      const targetH = baseH * startScale + dy
-      const diag1 = Math.hypot(targetW, targetH)
-      const next = diag0 > 0 ? diag1 / diag0 : startScale
-
-      pendingScale = next
-      scheduleApply()
-    })
-
-    const endDrag = () => {
-      dragging = false
-
-      // Flush any pending RAF update before persisting.
       if (pendingScale != null) {
         applyScale(pendingScale)
         pendingScale = null
@@ -270,6 +145,23 @@ window.addEventListener('i18n:changed', (ev) => {
 
 let relistNow = []
 
+const API_FLAVOR_V020_V021 = 'v020-v021'
+
+const DEFAULT_ATTACHMENT_ONLY_TEXT = '#附件 此为默认填充,如需自定义,请在发送附件前填写你的文本内容或者设置项里自定义.'
+
+function getAttachmentOnlyDefaultText(customText) {
+  const value = typeof customText === 'string' ? customText.trim() : ''
+  return value || DEFAULT_ATTACHMENT_ONLY_TEXT
+}
+
+function resolveSendContent(rawContent, resources, customText) {
+  const value = typeof rawContent === 'string' ? rawContent : ''
+  if (value.trim() !== '') return value
+  const items = Array.isArray(resources) ? resources : []
+  if (items.length === 0) return ''
+  return getAttachmentOnlyDefaultText(customText)
+}
+
 function get_info(callback) {
   chrome.storage.sync.get(
     {
@@ -283,7 +175,8 @@ function get_info(callback) {
       open_content: '',
       userid: '',
       memoUiPath: 'memos',
-      resourceIdList: []
+      resourceIdList: [],
+      attachmentOnlyDefaultText: ''
     },
     function (items) {
       var flag = false
@@ -305,18 +198,18 @@ function get_info(callback) {
       returnObject.userid = items.userid
       returnObject.memoUiPath = items.memoUiPath
       returnObject.resourceIdList = items.resourceIdList
+      returnObject.attachmentOnlyDefaultText = items.attachmentOnlyDefaultText
 
       if (callback) callback(returnObject)
     }
   )
 }
 
-function isV023Flavor(info) {
-  return info && info.apiFlavor === 'v023' && window.MemosApiV023
-}
-
-function isV1Flavor(info) {
-  return info && info.apiFlavor === 'v1' && window.MemosApiV1
+function getApiAdapter(info) {
+  if (window.MemosApiAdapter && typeof window.MemosApiAdapter.resolve === 'function') {
+    return window.MemosApiAdapter.resolve(info)
+  }
+  return null
 }
 
 function getMemoUid(memo) {
@@ -344,6 +237,7 @@ get_info(function (info) {
   $('#apiTokens').val(info.apiTokens)
   $('#hideInput').val(info.hidetag)
   $('#showInput').val(info.showtag)
+  $('#attachmentOnlyDefaultText').val(info.attachmentOnlyDefaultText)
   if (info.open_action === 'upload_image') {
     //打开的时候就是上传图片
     uploadImage(info.open_content)
@@ -559,10 +453,11 @@ function memoFromNow(memo) {
 }
 
 function hydrateV1PreviewImages(info) {
-  if (!isV1Flavor(info)) return
-  if (!info || !info.apiUrl || !info.apiTokens) return
+  const adapter = getApiAdapter(info)
+  if (!adapter || !adapter.needsAuthenticatedImagePreview()) return
+  if (!info || !info.apiUrl) return
 
-  const token = String(info.apiTokens)
+  const token = info && info.apiTokens != null ? String(info.apiTokens).trim() : ''
   let root = String(info.apiUrl)
   let apiOrigin = ''
   try {
@@ -646,9 +541,10 @@ function hydrateV1PreviewImages(info) {
 
     fetch(abs, {
       method: 'GET',
-      headers: {
+      credentials: 'include',
+      headers: token ? {
         Authorization: 'Bearer ' + token
-      }
+      } : {}
     })
       .then(function (res) {
         if (!res || !res.ok) throw new Error('HTTP ' + (res ? res.status : '0'))
@@ -662,9 +558,9 @@ function hydrateV1PreviewImages(info) {
         img.src = objectUrl
       })
       .catch(function () {
-        // Don't break previews for modern versions where plain <img src> may already work.
+        // Fall back to the original URL so the browser can still try cookie-based auth.
         if (hasAuthAttr) {
-          try { img.removeAttribute('src') } catch (_) {}
+          try { img.setAttribute('src', abs) } catch (_) {}
         }
       })
   })
@@ -789,32 +685,9 @@ $(document).on('click', '.upload-del', function () {
       return
     }
 
-    const inferredId = (function () {
-      if (rid != null && String(rid).trim() !== '' && !Number.isNaN(Number(rid))) return Math.floor(Number(rid))
-      const tail = String(name).split('/').pop()
-      if (tail && !Number.isNaN(Number(tail))) return Math.floor(Number(tail))
-      return null
-    })()
-
-    const doDelete = isV1Flavor(info) && window.MemosApiV1 && typeof window.MemosApiV1.deleteResource === 'function' && inferredId != null
-      ? function (onOk, onFail) {
-          window.MemosApiV1.deleteResource(info, inferredId, onOk, onFail)
-        }
-      : function (onOk, onFail) {
-          $.ajax({
-            url: info.apiUrl + 'api/v1/' + name,
-            type: 'DELETE',
-            headers: { Authorization: 'Bearer ' + info.apiTokens },
-            success: function (data) {
-              onOk(data)
-            },
-            error: function (xhr) {
-              onFail(xhr)
-            }
-          })
-        }
-
-    doDelete(
+    const adapter = getApiAdapter(info)
+    adapter.deleteResource(
+      { name: name, id: rid },
       function () {
         const next = (Array.isArray(relistNow) ? relistNow : []).filter(function (x) {
           return x && x.name !== name
@@ -830,193 +703,101 @@ $(document).on('click', '.upload-del', function () {
     )
   })
 })
+
 function uploadImage(file) {
   $.message({
     message: msg('picUploading'),
     autoClose: false
   });
   get_info(function (info) {
-    if (isV1Flavor(info)) {
-      uploadImageNowV1(file)
-      return
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const base64String = e.target.result.split(',')[1];
-      uploadImageNow(base64String, file);
-    };
-    reader.onerror = function(error) {
-      console.error('Error reading file:', error);
-    };
-    reader.readAsDataURL(file);
-  })
-};
-
-function uploadImageNowV1(file) {
-  get_info(function (info) {
-    if (!info.status) {
-      $.message({ message: msg('placeApiUrl') })
-      return
-    }
-
-    let old_name = file.name.split('.')
-    let file_ext = file.name.split('.').pop()
-    let now = dayjs().format('YYYYMMDDHHmmss')
-    let new_name = old_name[0] + '_' + now + '.' + file_ext
-
-    window.MemosApiV1.uploadResourceBlob(
-      info,
+    const adapter = getApiAdapter(info)
+    adapter.uploadFile(
       file,
-      { filename: new_name, type: file.type },
+      {
+        editorContent: $("textarea[name=text]").val(),
+        hideTag: info.hidetag,
+        showTag: info.showtag,
+        memoLock: info.memo_lock
+      },
       function (entity) {
-        const inferredId = (function () {
-          if (!entity) return null
-          const v = entity.id != null ? entity.id : entity.ID != null ? entity.ID : entity.Id
-          if (typeof v === 'number' && Number.isFinite(v)) return Math.floor(v)
-          if (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v))) return Math.floor(Number(v))
-          return null
-        })()
-
-        // v0.18: resource entity has no `name`, only `id/filename/type/...`.
-        // Treat having an id as a successful upload.
-        if (entity && (entity.name || inferredId != null)) {
-          const name = entity.name || (inferredId != null ? 'resources/' + String(inferredId) : '')
-          relistNow.push({
-            id: inferredId != null ? inferredId : entity.id,
-            name: name,
-            filename: entity.filename || new_name,
-            createTime: entity.createTime || entity.createdTs || entity.createdAt,
-            type: entity.type
-          })
+        if (entity) {
+          relistNow.push(entity)
           chrome.storage.sync.set({ open_action: '', open_content: '', resourceIdList: relistNow }, function () {
             $.message({ message: msg('picSuccess') })
+            renderUploadList(relistNow)
           })
           return
         }
-
         chrome.storage.sync.set({ open_action: '', open_content: '' }, function () {
           $.message({ message: msg('picFailed') })
         })
       },
       function () {
-        $.message({ message: msg('picFailed') })
+        chrome.storage.sync.set({ open_action: '', open_content: '' }, function () {
+          $.message({ message: msg('picFailed') })
+        })
       }
     )
   })
+};
+
+function buildCustomSettingsPayload() {
+  return {
+    attachmentOnlyDefaultText: $('#attachmentOnlyDefaultText').val()
+  }
 }
 
-function uploadImageNow(base64String, file) {
-  get_info(function(info) {
-    if (info.status) {
-      let old_name = file.name.split('.');
-      let file_ext = file.name.split('.').pop();
-      let now = dayjs().format('YYYYMMDDHHmmss');
-      let new_name = old_name[0] + '_' + now + '.' + file_ext;
-      var hideTag = info.hidetag
-      var showTag = info.showtag
-      var nowTag = $("textarea[name=text]").val().match(/(#[^\s#]+)/)
-      var sendvisi = info.memo_lock || ''
-      if(nowTag){
-        if(nowTag[1] == showTag){
-          sendvisi = 'PUBLIC'
-        }else if(nowTag[1] == hideTag){
-          sendvisi = 'PRIVATE'
-        }
-      }
-      const data = {
-        content: base64String,
-        visibility: sendvisi,
-        filename: new_name,
-        type: file.type
-      };
-      window.MemosApi.uploadAttachmentOrResource(
-        info,
-        data,
-        function (resp) {
-          const entity = (resp && resp.resource) || resp
-          if (entity && entity.name) {
-            relistNow.push({
-              name: entity.name,
-              filename: entity.filename || new_name,
-              createTime: entity.createTime,
-              type: entity.type
-            })
-            chrome.storage.sync.set(
-              {
-                open_action: '',
-                open_content: '',
-                resourceIdList: relistNow
-              },
-              function () {
-                $.message({ message: msg('picSuccess') })
-              }
-            )
-            return
-          }
-
-          chrome.storage.sync.set(
-            {
-              open_action: '',
-              open_content: '',
-              resourceIdList: []
-            },
-            function () {
-              $.message({ message: msg('picFailed') })
-            }
-          )
-        },
-        function () {
-          $.message({ message: msg('picFailed') })
-        }
-      )
-    }else {
-      $.message({
-        message: msg('placeApiUrl')
-      })
-    }
-  });
-}
-
-$('#saveKey').click(function () {
+function saveSettingsPanel() {
   var apiUrl = $('#apiUrl').val()
   if (apiUrl.length > 0 && !apiUrl.endsWith('/')) {
-    apiUrl += '/';
+    apiUrl += '/'
   }
   var apiTokens = $('#apiTokens').val()
+  var customSettings = buildCustomSettingsPayload()
 
-  window.MemosApi.authWithFallback(apiUrl, apiTokens, function (auth) {
+  if (!apiUrl && !apiTokens) {
+    chrome.storage.sync.set(customSettings, function () {
+      $.message({ message: msg('saveSuccess') })
+      $('#blog_info').slideUp(200)
+    })
+    return
+  }
+
+  window.MemosApiModern.authWithFallback(apiUrl, apiTokens, function (auth) {
     if (!auth || auth.userId == null) {
       $.message({ message: msg('invalidToken') })
       return
     }
 
     chrome.storage.sync.set(
-      {
+      Object.assign({}, customSettings, {
         apiUrl: apiUrl,
         apiTokens: apiTokens,
         userid: auth.userId,
         memoUiPath: auth.uiPath || 'memos',
         apiFlavor: ''
-      },
+      }),
       function () {
         $.message({ message: msg('saveSuccess') })
         $('#blog_info').hide()
 
         // Auto-detect API flavor once; keep default behavior when unknown.
-        if (window.MemosApiV023 && typeof window.MemosApiV023.probeApiFlavor === 'function') {
-          window.MemosApiV023.probeApiFlavor(apiUrl, apiTokens, function (res) {
+        if (window.MemosApiAdapter && typeof window.MemosApiAdapter.probeFlavor === 'function') {
+          window.MemosApiAdapter.probeFlavor(apiUrl, apiTokens, function (res) {
             const flavor = res && res.flavor ? res.flavor : ''
-            const normalized = flavor === 'v020' || flavor === 'v021' ? 'v1' : flavor
-            if (normalized === 'v1' || normalized === 'v023' || normalized === 'modern') {
-              chrome.storage.sync.set({ apiFlavor: normalized })
+            if (window.MemosApiAdapter.KNOWN_FLAVORS.indexOf(flavor) !== -1) {
+              chrome.storage.sync.set({ apiFlavor: flavor })
             }
           })
         }
       }
     )
   })
-});
+}
+
+$('#saveSettings').click(function () {
+  saveSettingsPanel()
+})
 
 $('#opensite').click(function () {
   get_info(function (info) {
@@ -1028,9 +809,8 @@ $('#opensite').click(function () {
 $('#tags').click(function () {
   get_info(function (info) {
     if (info.apiUrl) {
-      var parent = `users/${info.userid}`;
-      // 从最近的1000条memo中获取tags,因此不保证获取能全部的
       var tagDom = "";
+      const adapter = getApiAdapter(info)
 
       const renderTags = function (tags) {
         const uniTags = [...new Set((Array.isArray(tags) ? tags : []).filter(Boolean))]
@@ -1041,62 +821,9 @@ $('#tags').click(function () {
         $("#taglist").html(tagDom).slideToggle(500)
       }
 
-      const onTagsData = function (data) {
-        const memos = window.MemosApi.extractMemosListFromResponse(data)
-
-        const allTags = memos.flatMap(function (memo) {
-          if (!memo) return []
-          // v0.23 response may include `tags: []` while actual tags live in `memo.property.tags`.
-          // So when v0.23 flavor is detected, always use the compat extractor first.
-          if (isV023Flavor(info)) return window.MemosApiV023.extractTagsFromMemo(memo)
-          if (Array.isArray(memo.tags) && memo.tags.length > 0) return memo.tags
-          if (Array.isArray(memo.tagList) && memo.tagList.length > 0) return memo.tagList
-          if (memo.property && Array.isArray(memo.property.tags) && memo.property.tags.length > 0) {
-            return memo.property.tags
-          }
-          return []
-        })
-        const uniTags = [...new Set(allTags.filter(Boolean))]
-
-        renderTags(uniTags)
-      }
-
-      if (isV1Flavor(info)) {
-        window.MemosApiV1.getTagSuggestion(
-          info,
-          function (tags) {
-            renderTags(Array.isArray(tags) ? tags : [])
-          },
-          function () {
-            $.message({ message: msg('placeApiUrl') })
-          }
-        )
-      } else if (isV023Flavor(info)) {
-        const filterExpr = window.MemosApiV023.buildFilter({
-          rowStatus: 'NORMAL',
-          creator: 'users/' + info.userid
-        })
-        window.MemosApiV023.listMemos(
-          info,
-          {
-            pageSize: 1000,
-            filterExpr: filterExpr
-          },
-          onTagsData,
-          function () {
-            $.message({ message: msg('placeApiUrl') })
-          }
-        )
-      } else {
-        window.MemosApi.fetchMemosWithFallback(
-          info,
-          '?pageSize=1000',
-          onTagsData,
-          function () {
-            $.message({ message: msg('placeApiUrl') })
-          }
-        )
-      }
+      adapter.listTags(renderTags, function () {
+        $.message({ message: msg('placeApiUrl') })
+      })
     } else {
       $.message({
         message: msg('placeApiUrl')
@@ -1107,10 +834,10 @@ $('#tags').click(function () {
 
 $(document).on("click","#hideTag",function () {
   $('#taghide').slideToggle(500)
+  $('#hideInput').trigger('focus')
 })
 
 $('#saveTag').click(function () {
-  // 保存数据
   chrome.storage.sync.set(
     {
       hidetag: $('#hideInput').val(),
@@ -1142,32 +869,15 @@ $(document).on("click",".item-lock",function () {
 $('#search').click(function () {
   get_info(function (info) {
   const pattern = $("textarea[name=text]").val()
-  var parent = `users/${info.userid}`;
-  const patternLiteral = JSON.stringify(String(pattern || ''))
-  var filter = "?filter=" + encodeURIComponent(`visibility in ["PUBLIC","PROTECTED"] && content.contains(${patternLiteral})`);
   if (info.status) {
     $("#randomlist").html('').hide()
     var searchDom = ""
     if(pattern){
-      const runSearch = isV023Flavor(info)
-          ? function (onOk, onFail) {
-              const filterExpr = window.MemosApiV023.buildFilter({
-                visibilities: ['PUBLIC', 'PROTECTED'],
-                contentSearch: String(pattern)
-              })
-              window.MemosApiV023.listMemos(info, { pageSize: 1000, filterExpr: filterExpr }, onOk, onFail)
-            }
-          : isV1Flavor(info)
-            ? function (onOk, onFail) {
-                window.MemosApiV1.listMemos(info, { limit: 1000, rowStatus: 'NORMAL', contentSearch: String(pattern) }, onOk, onFail)
-              }
-          : function (onOk, onFail) {
-              window.MemosApi.fetchMemosWithFallback(info, filter, onOk, onFail)
-            }
+      const adapter = getApiAdapter(info)
 
-      runSearch(
-        function (data) {
-          let searchData = window.MemosApi.extractMemosListFromResponse(data)
+      adapter.searchMemos(
+        pattern,
+        function (searchData) {
           if(searchData.length == 0){
             $.message({
               message: msg('searchNone')
@@ -1192,7 +902,7 @@ $('#search').click(function () {
                     continue
                   }
                   if(restype == 'image'){
-                    if (isV1Flavor(info)) {
+                    if (adapter.needsAuthenticatedImagePreview()) {
                       searchDom += '<img class="random-image" data-auth-src="'+resLink+'"/>'
                     } else {
                       searchDom += '<img class="random-image" src="'+resLink+'"/>'
@@ -1229,26 +939,12 @@ $('#search').click(function () {
 
 $('#random').click(function () {
   get_info(function (info) {
-    var parent = `users/${info.userid}`;
     if (info.status) {
       $("#randomlist").html('').hide()
-      const runRandom = isV023Flavor(info)
-          ? function (onOk, onFail) {
-              const filterExpr = window.MemosApiV023.buildFilter({ visibilities: ['PUBLIC', 'PROTECTED'] })
-              window.MemosApiV023.listMemos(info, { pageSize: 1000, filterExpr: filterExpr }, onOk, onFail)
-            }
-          : isV1Flavor(info)
-            ? function (onOk, onFail) {
-                window.MemosApiV1.listMemos(info, { limit: 1000, rowStatus: 'NORMAL' }, onOk, onFail)
-              }
-          : function (onOk, onFail) {
-              const filter = "?filter=" + encodeURIComponent(`visibility in ["PUBLIC","PROTECTED"]`);
-              window.MemosApi.fetchMemosWithFallback(info, filter, onOk, onFail)
-            }
+      const adapter = getApiAdapter(info)
 
-      runRandom(
-        function (data) {
-          const memos = window.MemosApi.extractMemosListFromResponse(data)
+      adapter.listRandomMemos(
+        function (memos) {
           let randomNum = Math.floor(Math.random() * (memos.length));
           var randomData = memos[randomNum]
           randDom(randomData)
@@ -1267,6 +963,7 @@ $('#random').click(function () {
 
 function randDom(randomData){
   get_info(function (info) {
+    const adapter = getApiAdapter(info)
   var memosID = getMemoUid(randomData)
   var timeText = memoFromNow(randomData)
   var randomDom = '<div class="random-item"><div class="random-time"><span id="random-link" data-uid="'+memosID+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M864 640a32 32 0 0 1 64 0v224.096A63.936 63.936 0 0 1 864.096 928H159.904A63.936 63.936 0 0 1 96 864.096V159.904C96 124.608 124.64 96 159.904 96H384a32 32 0 0 1 0 64H192.064A31.904 31.904 0 0 0 160 192.064v639.872A31.904 31.904 0 0 0 192.064 864h639.872A31.904 31.904 0 0 0 864 831.936V640zm-485.184 52.48a31.84 31.84 0 0 1-45.12-.128 31.808 31.808 0 0 1-.128-45.12L815.04 166.048l-176.128.736a31.392 31.392 0 0 1-31.584-31.744 32.32 32.32 0 0 1 31.84-32l255.232-1.056a31.36 31.36 0 0 1 31.584 31.584L924.928 388.8a32.32 32.32 0 0 1-32 31.84 31.392 31.392 0 0 1-31.712-31.584l.736-179.392L378.816 692.48z" fill="#666" data-spm-anchor-id="a313x.7781069.0.i12" class="selected"/></svg></span><span id="random-delete" data-uid="'+memosID+'" data-name="'+randomData.name+'" data-id="'+(randomData && randomData.id != null ? randomData.id : '')+'"><svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M224 322.6h576c16.6 0 30-13.4 30-30s-13.4-30-30-30H224c-16.6 0-30 13.4-30 30 0 16.5 13.5 30 30 30zm66.1-144.2h443.8c16.6 0 30-13.4 30-30s-13.4-30-30-30H290.1c-16.6 0-30 13.4-30 30s13.4 30 30 30zm339.5 435.5H394.4c-16.6 0-30 13.4-30 30s13.4 30 30 30h235.2c16.6 0 30-13.4 30-30s-13.4-30-30-30z" fill="#666"/><path d="M850.3 403.9H173.7c-33 0-60 27-60 60v360c0 33 27 60 60 60h676.6c33 0 60-27 60-60v-360c0-33-27-60-60-60zm-.1 419.8l-.1.1H173.9l-.1-.1V464l.1-.1h676.2l.1.1v359.7z" fill="#666"/></svg></span>'+timeText+'</div><div class="random-content">'+(randomData && randomData.content ? randomData.content : '').replace(/!\[.*?\]\((.*?)\)/g,' <img class="random-image" src="$1"/> ').replace(/\[(.*?)\]\((.*?)\)/g,' <a href="$2" target="_blank">$1</a> ')+'</div>'
@@ -1285,7 +982,7 @@ function randDom(randomData){
         continue
       }
       if(restype == 'image'){
-        if (isV1Flavor(info)) {
+        if (adapter.needsAuthenticatedImagePreview()) {
           randomDom += '<img class="random-image" data-auth-src="'+resLink+'"/>'
         } else {
           randomDom += '<img class="random-image" src="'+resLink+'"/>'
@@ -1313,49 +1010,20 @@ $(document).on("click","#random-link",function () {
 
 $(document).on("click","#random-delete",function () {
 get_info(function (info) {
-  // var memoUid = $("#random-delete").data('uid');
   var memosName = $("#random-delete").data('name');
   var memoId = $("#random-delete").data('id');
 
-  // v0.20/v0.21: archive memo via API v1 PATCH /api/v1/memo/:id
-  if (isV1Flavor(info) && memoId) {
-    window.MemosApiV1.patchMemo(
-      info,
-      memoId,
-      { rowStatus: 'ARCHIVED' },
-      function () {
-        $("#randomlist").html('').hide()
-        $.message({ message: msg('archiveSuccess') })
-      },
-      function () {
-        $.message({ message: msg('archiveFailed') })
-      }
-    )
-    return
-  }
-
-  var deleteUrl = info.apiUrl+'api/v1/'+memosName
-  $.ajax({
-    url:deleteUrl,
-    type:"PATCH",
-    data:JSON.stringify({
-      // 'uid': memoUid,
-      'state': "ARCHIVED"
-    }),
-    contentType:"application/json",
-    dataType:"json",
-    headers : {'Authorization':'Bearer ' + info.apiTokens},
-    success: function(result){
-          $("#randomlist").html('').hide()
-              $.message({
-                message: msg('archiveSuccess')
-              })
-  },error:function(err){//清空open_action（打开时候进行的操作）,同时清空open_content
-              $.message({
-                message: msg('archiveFailed')
-              })
-          }
-  })
+  const adapter = getApiAdapter(info)
+  adapter.archiveMemo(
+    { name: memosName, id: memoId },
+    function () {
+      $("#randomlist").html('').hide()
+      $.message({ message: msg('archiveSuccess') })
+    },
+    function () {
+      $.message({ message: msg('archiveFailed') })
+    }
+  )
 })
 })
 
@@ -1416,8 +1084,13 @@ $('#blog_info_edit').click(function () {
 
 $('#content_submit_text').click(function () {
   var contentVal = $("textarea[name=text]").val()
-  if(contentVal){
-    sendText()
+  var contentToSend = resolveSendContent(
+    contentVal,
+    relistNow,
+    $('#attachmentOnlyDefaultText').val()
+  )
+  if(contentToSend){
+    sendText(contentToSend)
   }else{
     $.message({
       message: msg('placeContent')
@@ -1429,16 +1102,9 @@ function getOne(memosId){
   get_info(function (info) {
   if (info.apiUrl) {
     $("#randomlist").html('').hide()
-        var getUrl = isV1Flavor(info) ? info.apiUrl+'api/v1/memo/'+memosId : info.apiUrl+'api/v1/'+memosId
-        $.ajax({
-          url:getUrl,
-          type:"GET",
-          contentType:"application/json",
-          dataType:"json",
-          headers : {'Authorization':'Bearer ' + info.apiTokens},
-          success: function(data){
-            randDom(data)
-          }
+        const adapter = getApiAdapter(info)
+        adapter.getMemo(memosId, function (memoEntity) {
+          randDom(memoEntity)
         })
   } else {
     $.message({
@@ -1448,17 +1114,27 @@ function getOne(memosId){
   })
 }
 
-function sendText() {
+function sendText(preparedContent) {
   get_info(function (info) {
     if (info.status) {
       $.message({
         message: msg('memoUploading')
       })
       //$("#content_submit_text").attr('disabled','disabled');
-      let content = $("textarea[name=text]").val()
+      let content = resolveSendContent(
+        typeof preparedContent === 'string' ? preparedContent : $("textarea[name=text]").val(),
+        info.resourceIdList,
+        info.attachmentOnlyDefaultText
+      )
+      if (!content) {
+        $.message({
+          message: msg('placeContent')
+        })
+        return
+      }
       var hideTag = info.hidetag
       var showTag = info.showtag
-      var nowTag = $("textarea[name=text]").val().match(/(#[^\s#]+)/)
+      var nowTag = content.match(/(#[^\s#]+)/)
       var sendvisi = info.memo_lock || ''
       if(nowTag){
         if(nowTag[1] == showTag){
@@ -1468,106 +1144,34 @@ function sendText() {
         }
       }
 
-      // Memos v0.20/v0.21: use /api/v1/memo and bind resources by numeric IDs.
-      if (isV1Flavor(info)) {
-        const items = Array.isArray(info.resourceIdList) ? info.resourceIdList : []
-        const resourceIdList = items
-          .map(function (r) {
-            if (!r) return null
-            if (typeof r.id === 'number' && Number.isFinite(r.id)) return Math.floor(r.id)
-            if (typeof r.id === 'string' && r.id.trim() !== '' && !Number.isNaN(Number(r.id))) {
-              return Math.floor(Number(r.id))
-            }
-            // Some versions store name as resources/{id}.
-            const n = typeof r.name === 'string' ? r.name : ''
-            const tail = n ? n.split('/').pop() : ''
-            if (tail && !Number.isNaN(Number(tail))) return Math.floor(Number(tail))
-            return null
-          })
-          .filter(function (x) {
-            return x != null && Number.isFinite(x)
-          })
-
-        window.MemosApiV1.createMemo(
-          info,
-          {
-            content: content,
-            visibility: sendvisi,
-            resourceIdList: resourceIdList
-          },
-          function (data) {
-            chrome.storage.sync.set(
-              { open_action: '', open_content: '', resourceIdList: [] },
-              function () {
-                $.message({ message: msg('memoSuccess') })
-                $("textarea[name=text]").val('')
-                relistNow = []
-                renderUploadList(relistNow)
-                randDom(data)
-              }
-            )
-          },
-          function () {
-            chrome.storage.sync.set(
-              { open_action: '', open_content: '' },
-              function () {
-                $.message({ message: msg('memoFailed') })
-              }
-            )
-          }
-        )
-        return
-      }
-
-      $.ajax({
-        url:info.apiUrl+'api/v1/memos',
-        type:"POST",
-        data:JSON.stringify({
-          'content': content,
-          'visibility': sendvisi
-        }),
-        contentType:"application/json",
-        dataType:"json",
-        headers : {'Authorization':'Bearer ' + info.apiTokens},
-        success: function(data){
-          if(info.resourceIdList.length > 0 ){
-            //匹配图片
-            window.MemosApi.patchMemoWithAttachmentsOrResources(
-              info,
-              data.name,
-              info.resourceIdList,
-              function () {
-                getOne(data.name)
-              },
-              function () {
-                getOne(data.name)
-              }
-            )
-          }else{
-            getOne(data.name)
-          }
+      const adapter = getApiAdapter(info)
+      adapter.createMemo(
+        {
+          content: content,
+          visibility: sendvisi,
+          resourceIdList: info.resourceIdList
+        },
+        function (data) {
           chrome.storage.sync.set(
-            { open_action: '', open_content: '',resourceIdList:[]},
+            { open_action: '', open_content: '', resourceIdList: [] },
             function () {
-              $.message({
-                message: msg('memoSuccess')
-              })
-              //$("#content_submit_text").removeAttr('disabled');
+              $.message({ message: msg('memoSuccess') })
               $("textarea[name=text]").val('')
               relistNow = []
               renderUploadList(relistNow)
+              randDom(data)
             }
           )
-      },error:function(err){//清空open_action（打开时候进行的操作）,同时清空open_content
-              chrome.storage.sync.set(
-                { open_action: '', open_content: '',resourceIdList:[] },
-                function () {
-                  $.message({
-                    message: msg('memoFailed')
-                  })
-                }
-              )},
-      })
+        },
+        function () {
+          chrome.storage.sync.set(
+            { open_action: '', open_content: '', resourceIdList: [] },
+            function () {
+              $.message({ message: msg('memoFailed') })
+            }
+          )
+        }
+      )
     } else {
       $.message({
         message: msg('placeApiUrl')

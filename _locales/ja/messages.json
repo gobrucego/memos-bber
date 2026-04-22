@@ -23,6 +23,18 @@
   "supportedMemosVersion": {
     "message": "Memos v0.15.0 - 0.27.x に対応"
   },
+  "settingsConnectionTitle": {
+    "message": "接続設定"
+  },
+  "settingsConnectionDesc": {
+    "message": "Memos のURLとアクセストークンを設定します。"
+  },
+  "settingsPostingTitle": {
+    "message": "投稿設定"
+  },
+  "settingsPostingDesc": {
+    "message": "添付ファイルのみ送信時の既定テキスト"
+  },
   "placeApiUrl": {
     "message": "Memos サイトURL"
   },
@@ -49,6 +61,9 @@
   },
   "placeShowInput": {
     "message": "既定の「全員に公開」タグ名"
+  },
+  "placeAttachmentOnlyDefaultText": {
+    "message": "添付ファイルのみ送信時の既定テキスト（空欄で内蔵文言を使用）"
   },
   "uploadedListTitle": {
     "message": "アップロード済みファイル（ドラッグで並べ替え）"

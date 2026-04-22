@@ -500,7 +500,7 @@
     doPatchAttachments()
   }
 
-  global.MemosApi = {
+  global.MemosApiModern = {
     extractUserIdFromAuthResponse: extractUserIdFromAuthResponse,
     extractMemosListFromResponse: extractMemosListFromResponse,
     isNotFoundLikeXhr: isNotFoundLikeXhr,

@@ -274,7 +274,7 @@
       })
   }
 
-  global.MemosApiV1 = {
+  global.MemosApiV020V021 = {
     listMemos: listMemos,
     createMemo: createMemo,
     patchMemo: patchMemo,

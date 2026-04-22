@@ -102,10 +102,14 @@ function setTitle(id, messageKey) {
 }
 
 function applyStaticI18n() {
-	setText('saveKey', 'saveBtn')
+	setText('saveSettings', 'saveBtn')
 	setText('saveTag', 'saveBtn')
 
 	setText('supportedMemosVersion', 'supportedMemosVersion')
+	setText('settingsConnectionTitle', 'settingsConnectionTitle')
+	setText('settingsConnectionDesc', 'settingsConnectionDesc')
+	setText('settingsPostingTitle', 'settingsPostingTitle')
+	setText('settingsPostingDesc', 'settingsPostingDesc')
 
 	setPlaceholder('apiUrl', 'placeApiUrl')
 	setPlaceholder('apiTokens', 'placeApiTokens')
@@ -121,6 +125,7 @@ function applyStaticI18n() {
 
 	setPlaceholder('hideInput', 'placeHideInput')
 	setPlaceholder('showInput', 'placeShowInput')
+	setPlaceholder('attachmentOnlyDefaultText', 'placeAttachmentOnlyDefaultText')
 
 	setText('uploadlist-title', 'uploadedListTitle')
 

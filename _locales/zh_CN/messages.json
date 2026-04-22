@@ -23,6 +23,18 @@
    "supportedMemosVersion": {
       "message": "兼容 Memos v0.15.0 - 0.27.x"
    },
+   "settingsConnectionTitle": {
+      "message": "连接设置"
+   },
+   "settingsConnectionDesc": {
+      "message": "配置 Memos 服务地址和访问令牌。"
+   },
+   "settingsPostingTitle": {
+      "message": "发送设置"
+   },
+   "settingsPostingDesc": {
+      "message": "仅发送附件时的默认文本"
+   },
    "placeApiUrl":{
       "message": "请填入 Memos 主页网址"
    },
@@ -49,6 +61,9 @@
    },
    "placeShowInput":{
       "message": "默认“公开”标签名"
+   },
+   "placeAttachmentOnlyDefaultText":{
+      "message": "仅发送附件时的默认文本（留空则使用内置文案）"
    },
    "picDrag":{
       "message": "拖拽到窗口上传该图片"

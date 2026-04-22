@@ -23,6 +23,18 @@
   "supportedMemosVersion": {
     "message": "Memos v0.15.0 - 0.27.x 호환"
   },
+  "settingsConnectionTitle": {
+    "message": "연결 설정"
+  },
+  "settingsConnectionDesc": {
+    "message": "Memos 사이트 URL과 액세스 토큰을 설정합니다."
+  },
+  "settingsPostingTitle": {
+    "message": "전송 설정"
+  },
+  "settingsPostingDesc": {
+    "message": "첨부만 전송할 때의 기본 텍스트"
+  },
   "placeApiUrl": {
     "message": "Memos 사이트 URL"
   },
@@ -49,6 +61,9 @@
   },
   "placeShowInput": {
     "message": "기본 '모두 공개' 태그 이름"
+  },
+  "placeAttachmentOnlyDefaultText": {
+    "message": "첨부만 전송할 때의 기본 텍스트(비워두면 내장 문구 사용)"
   },
   "uploadedListTitle": {
     "message": "업로드된 파일(드래그로 순서 변경)"
