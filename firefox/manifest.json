@@ -14,7 +14,7 @@
       "gecko": {
          "id": "memos-bber@jonnyan404.github.io",
          "data_collection_permissions": {
-            "required": false
+            "required": ["none"]
          }
       }
    },
