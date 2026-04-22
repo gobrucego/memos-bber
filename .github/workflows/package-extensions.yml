@@ -9,6 +9,7 @@ on:
       release_tag:
         description: Release tag used for direct asset upload, for example v2026.04.23
         required: true
+        default: 'v2026.04.23'
   push:
     tags:
       - 'v*'
