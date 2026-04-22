@@ -1,0 +1,188 @@
+{
+  "extName": {
+    "message": "Memos"
+  },
+  "actionTitle": {
+    "message": "Memos 보내기"
+  },
+  "extDescription": {
+    "message": "memos: 가볍고 셀프호스팅 가능한 메모 허브."
+  },
+  "sendTo": {
+    "message": "Memos로 \"%s\" 보내기"
+  },
+  "sendLinkTo": {
+    "message": "링크를 Memos로 보내기"
+  },
+  "sendImageTo": {
+    "message": "이미지를 Memos로 보내기"
+  },
+  "saveBtn": {
+    "message": "저장"
+  },
+  "supportedMemosVersion": {
+    "message": "Memos v0.15.0 - 0.27.x 호환"
+  },
+  "settingsConnectionTitle": {
+    "message": "연결 설정"
+  },
+  "settingsConnectionDesc": {
+    "message": "Memos 사이트 URL과 액세스 토큰을 설정합니다."
+  },
+  "settingsPostingTitle": {
+    "message": "전송 설정"
+  },
+  "settingsPostingDesc": {
+    "message": "첨부만 전송할 때의 기본 텍스트"
+  },
+  "placeApiUrl": {
+    "message": "Memos 사이트 URL"
+  },
+  "placeApiTokens": {
+    "message": "Memos 액세스 토큰"
+  },
+  "placeContent": {
+    "message": "지금 떠오른 생각은..."
+  },
+  "lockPrivate": {
+    "message": "비공개"
+  },
+  "lockProtected": {
+    "message": "보호됨"
+  },
+  "lockPublic": {
+    "message": "공개"
+  },
+  "submitBtn": {
+    "message": "전송"
+  },
+  "placeHideInput": {
+    "message": "기본 '비공개' 태그 이름"
+  },
+  "placeShowInput": {
+    "message": "기본 '모두 공개' 태그 이름"
+  },
+  "placeAttachmentOnlyDefaultText": {
+    "message": "첨부만 전송할 때의 기본 텍스트(비워두면 내장 문구 사용)"
+  },
+  "uploadedListTitle": {
+    "message": "업로드된 파일(드래그로 순서 변경)"
+  },
+  "uploadedListEmpty": {
+    "message": "업로드된 파일이 없습니다"
+  },
+  "tipReorder": {
+    "message": "드래그하여 순서 변경"
+  },
+  "tipDeleteAttachment": {
+    "message": "삭제"
+  },
+  "attachmentDeleteSuccess": {
+    "message": "삭제됨"
+  },
+  "attachmentDeleteFailed": {
+    "message": "삭제 실패 😭"
+  },
+  "picDrag": {
+    "message": "이미지를 드래그하여 업로드"
+  },
+  "picCancelDrag": {
+    "message": "업로드 취소"
+  },
+  "picUploading": {
+    "message": "이미지 업로드 중..."
+  },
+  "picSuccess": {
+    "message": "업로드 완료"
+  },
+  "picFailed": {
+    "message": "업로드 실패"
+  },
+  "picPending": {
+    "message": "이미지 업로드가 진행 중입니다"
+  },
+  "saveSuccess": {
+    "message": "저장 성공!"
+  },
+  "searchNow": {
+    "message": "무엇을 찾고 있나요?"
+  },
+  "searchNone": {
+    "message": "다른 단어를 시도해 보세요!"
+  },
+  "archiveSuccess": {
+    "message": "보관 성공 😊"
+  },
+  "archiveFailed": {
+    "message": "보관 실패 😭"
+  },
+  "getTabFailed": {
+    "message": "탭 가져오기 실패 😭"
+  },
+  "memoUploading": {
+    "message": "전송 중"
+  },
+  "memoSuccess": {
+    "message": "성공! 😊"
+  },
+  "memoFailed": {
+    "message": "실패! 😭"
+  },
+  "invalidToken": {
+    "message": "유효하지 않은 토큰 또는 URL 😭"
+  },
+  "tipOpenSite": {
+    "message": "Memos 열기"
+  },
+  "tipSettings": {
+    "message": "설정"
+  },
+  "tipTags": {
+    "message": "태그 삽입"
+  },
+  "tipTodo": {
+    "message": "할 일 삽입"
+  },
+  "tipUpload": {
+    "message": "파일 업로드"
+  },
+  "tipLink": {
+    "message": "현재 탭 링크 삽입"
+  },
+  "tipRandom": {
+    "message": "랜덤 메모"
+  },
+  "tipSearch": {
+    "message": "검색"
+  },
+  "tipVisibility": {
+    "message": "공개 범위"
+  },
+  "tipSend": {
+    "message": "전송(Ctrl/⌘+Enter)"
+  },
+  "tipLanguage": {
+    "message": "언어"
+  },
+  "langAuto": {
+    "message": "자동"
+  },
+  "langEnglish": {
+    "message": "English"
+  },
+  "langChineseSimplified": {
+    "message": "简体中文"
+  },
+    "langJapanese": {
+    "message": "日本語"
+  },
+  "langKorean": {
+    "message": "한국어"
+  },
+  "tipFullscreen": {
+    "message": "전체화면 편집"
+  },
+  "tipResize": {
+    "message": "드래그로 확대/축소(최소: 기본 크기)"
+  }
+}

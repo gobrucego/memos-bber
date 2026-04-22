@@ -1,8 +1,19 @@
 ## 说明
 
-Chrome 应用商店：<https://chrome.google.com/webstore/detail/memos-bber/cbhjebjfccgchgbmfbobjmebjjckgofe/>
+- Chrome 应用商店：https://chrome.google.com/webstore/detail/memos-bber/cbhjebjfccgchgbmfbobjmebjjckgofe/
+- FireFox 应用商店: 等待上架
+- edge 应用商店: 等待开发
 
 一个通过浏览器插件发布 [Memos](https://usememos.com/) 的插件。基于 iSpeak-bber 修改，原作者为 [DreamyTZK](https://www.antmoe.com/)。
+
+## 打包
+
+仓库内置了 GitHub Actions 工作流 [package-extensions.yml](.github/workflows/package-extensions.yml)，支持手动触发或在推送 `v*` 标签时自动打包。
+
+- `store-packages`：商店上传用文件，包含 Chrome 的 zip 包和 Firefox 的 xpi 包。
+- `offline-packages`：离线分发用文件，包含 Chrome 的 zip 包和 Firefox 的 xpi 包。
+
+说明：Chrome 的离线包用于解压后在开发者模式中“加载已解压的扩展程序”；Firefox 的离线包为未签名 xpi，适合临时附加组件或自行签名后的分发场景。
 
 ## 更新日志
 - 20260422 调整发送设置,支持仅发送附件

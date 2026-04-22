@@ -41,37 +41,115 @@ function initProportionalEditorResize() {
 
     const storageKey = 'popupEditorScale'
 
+    const nonEditorHeight = Math.max(0, Math.ceil(document.body.scrollHeight - initialRect.height))
     let maxScale = 1
-    const computeMaxScale = () => {
-      // In popup mode, allow scaling up to Chrome's max popup size.
-      // Do not clamp by current window.innerWidth/innerHeight, otherwise the popup can't grow to the max.
-      const viewportW = 800
-      const viewportH = 600
+    let currentScale = 1
+    let dragging = false
+    let dragStartX = 0
+    let dragStartY = 0
+    let dragStartScale = 1
 
-      const editorRect = editor.getBoundingClientRect()
-      const toolsRect = tools.getBoundingClientRect()
-      const toolsStyle = window.getComputedStyle(tools)
-      if (pendingScale != null) {
-        applyScale(pendingScale)
-        pendingScale = null
-      }
+    const clampScale = (scale) => {
+      if (!Number.isFinite(scale)) return 1
+      return Math.min(Math.max(scale, 1), maxScale)
+    }
 
-      // Persist current scale (best-effort).
+    const applyScale = (scale) => {
+      currentScale = clampScale(scale)
+      editor.style.width = `${Math.round(baseW * currentScale)}px`
+      editor.style.height = `${Math.round(baseH * currentScale)}px`
+    }
+
+    const persistScale = () => {
       try {
-        const s = readCurrentScale()
-        if (typeof s === 'number' && Number.isFinite(s)) {
-          try {
-            if (window.localStorage) window.localStorage.setItem(storageKey, String(s))
-          } catch (_) {}
-          chrome.storage.sync.set({ [storageKey]: s })
+        if (window.localStorage) window.localStorage.setItem(storageKey, String(currentScale))
+      } catch (_) {}
+
+      try {
+        if (chrome.storage && chrome.storage.sync) {
+          chrome.storage.sync.set({ [storageKey]: currentScale })
         }
       } catch (_) {
         // ignore
       }
     }
 
+    const computeMaxScale = () => {
+      // In popup mode, allow scaling up to Chrome's max popup size.
+      // Do not clamp by current window.innerWidth/innerHeight, otherwise the popup can't grow to the max.
+      const viewportW = 800
+      const viewportH = 600
+      const toolsRect = tools.getBoundingClientRect()
+      const toolsStyle = window.getComputedStyle(tools)
+      const toolsMarginTop = parseFloat(toolsStyle.marginTop || '0') || 0
+      const extraWidth = safety * 2
+      const extraHeight = nonEditorHeight + Math.ceil(toolsRect.height + toolsMarginTop) + safety
+      const widthScale = (viewportW - extraWidth) / baseW
+      const heightScale = (viewportH - extraHeight) / baseH
+      maxScale = Math.max(1, Math.min(widthScale, heightScale))
+      applyScale(currentScale)
+    }
+
+    const endDrag = () => {
+      if (!dragging) return
+      dragging = false
+      handle.classList.remove('dragging')
+      persistScale()
+    }
+
+    const onPointerMove = (ev) => {
+      if (!dragging) return
+      const dx = ev.clientX - dragStartX
+      const dy = ev.clientY - dragStartY
+      const widthScale = (baseW * dragStartScale + dx) / baseW
+      const heightScale = (baseH * dragStartScale + dy) / baseH
+      applyScale(Math.max(widthScale, heightScale))
+    }
+
+    const startDrag = (ev) => {
+      ev.preventDefault()
+      dragging = true
+      dragStartX = ev.clientX
+      dragStartY = ev.clientY
+      dragStartScale = currentScale
+      handle.classList.add('dragging')
+      if (typeof handle.setPointerCapture === 'function') {
+        try {
+          handle.setPointerCapture(ev.pointerId)
+        } catch (_) {
+          // Ignore capture failures.
+        }
+      }
+    }
+
+    computeMaxScale()
+
+    try {
+      const localValue = window.localStorage ? Number(window.localStorage.getItem(storageKey)) : NaN
+      if (Number.isFinite(localValue) && localValue >= 1) {
+        applyScale(localValue)
+      }
+    } catch (_) {
+      // ignore
+    }
+
+    try {
+      chrome.storage.sync.get({ [storageKey]: 1 }, (items) => {
+        const savedScale = Number(items && items[storageKey])
+        if (Number.isFinite(savedScale) && savedScale >= 1) {
+          applyScale(savedScale)
+        }
+      })
+    } catch (_) {
+      // ignore
+    }
+
+    handle.addEventListener('pointerdown', startDrag)
+    window.addEventListener('pointermove', onPointerMove)
     handle.addEventListener('pointerup', endDrag)
     handle.addEventListener('pointercancel', endDrag)
+    window.addEventListener('pointerup', endDrag)
+    window.addEventListener('resize', computeMaxScale)
   } catch (_) {
     // best-effort only
   }

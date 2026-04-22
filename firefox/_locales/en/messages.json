@@ -1,0 +1,188 @@
+{
+   "extName": {
+      "message": "Memos"
+   },
+   "actionTitle": {
+      "message": "Send Memos"
+   },
+   "extDescription": {
+      "message": "memos: A lightweight, self-hosted memo hub."
+   },
+   "sendTo": {
+      "message": "SendTo Memos \"%s\""
+   },
+   "sendLinkTo": {
+      "message": "Send link to Memos"
+   },
+   "sendImageTo": {
+      "message": "Send image to Memos"
+   },
+   "saveBtn":{
+      "message": "Save"
+   },
+   "supportedMemosVersion": {
+      "message": "Compatible with Memos v0.15.0 - 0.27.x"
+   },
+   "settingsConnectionTitle": {
+      "message": "Connection"
+   },
+   "settingsConnectionDesc": {
+      "message": "Configure the Memos site URL and access token."
+   },
+   "settingsPostingTitle": {
+      "message": "Posting"
+   },
+   "settingsPostingDesc": {
+      "message": "Default text for attachment-only sends"
+   },
+   "placeApiUrl":{
+      "message": "Memos site URL"
+   },
+   "placeApiTokens":{
+      "message": "Memos Access Tokens"
+   },
+   "placeContent":{
+      "message": "What's on your mind..."
+   },
+   "lockPrivate":{
+      "message": "Private"
+   },
+   "lockProtected":{
+      "message": "Protected"
+   },
+   "lockPublic":{
+      "message": "Public"
+   },
+   "submitBtn":{
+      "message": "Save"
+   },
+   "placeHideInput":{
+      "message": "Default 'Private' tag name"
+   },
+   "placeShowInput":{
+      "message": "Default 'Everyone can see' Tag name"
+   },
+   "placeAttachmentOnlyDefaultText": {
+      "message": "Default text for attachment-only sends (leave blank to use built-in text)"
+   },
+   "uploadedListTitle": {
+      "message": "Uploaded files, Drag to reorder"
+   },
+   "uploadedListEmpty": {
+      "message": "No uploaded files"
+   },
+   "tipReorder": {
+      "message": "Drag to reorder"
+   },
+   "tipDeleteAttachment": {
+      "message": "Delete"
+   },
+   "attachmentDeleteSuccess": {
+      "message": "Deleted"
+   },
+   "attachmentDeleteFailed": {
+      "message": "Delete failed 😭"
+   },
+   "picDrag":{
+      "message": "Drag upload the image"
+   },
+   "picCancelDrag":{
+      "message": "Cancel upload"
+   },
+   "picUploading":{
+      "message": "Upload the picture..."
+   },
+   "picSuccess":{
+      "message": "Upload completed"
+   },
+   "picFailed":{
+      "message": "Uploading failed"
+   },
+   "picPending":{
+      "message": "Image uploading is in progress"
+   },
+   "saveSuccess":{
+      "message": "Save Info Success!"
+   },
+   "searchNow":{
+      "message": "What are you looking for?"
+   },
+   "searchNone":{
+      "message": "Try another word!"
+   },
+   "archiveSuccess":{
+      "message": "Archive Success 😊"
+   },
+   "archiveFailed":{
+      "message": "Archive Failed 😭"
+   },
+   "getTabFailed":{
+      "message": "Get Tab Failed 😭"
+   },
+   "memoUploading":{
+      "message": "Sending"
+   },
+   "memoSuccess":{
+      "message": "Success! 😊"
+   },
+   "memoFailed":{
+      "message": "Failed! 😭"
+   },
+   "invalidToken":{
+      "message": "Invalid token or url 😭"
+   },
+   "tipOpenSite": {
+      "message": "Open Memos"
+   },
+   "tipSettings": {
+      "message": "Settings"
+   },
+   "tipTags": {
+      "message": "Insert tag"
+   },
+   "tipTodo": {
+      "message": "Insert todo"
+   },
+   "tipUpload": {
+      "message": "Upload file"
+   },
+   "tipLink": {
+      "message": "Insert current tab link"
+   },
+   "tipRandom": {
+      "message": "Random memo"
+   },
+   "tipSearch": {
+      "message": "Search"
+   },
+   "tipVisibility": {
+      "message": "Visibility"
+   },
+   "tipSend": {
+      "message": "Send (Ctrl/⌘+Enter)"
+   },
+   "tipLanguage": {
+      "message": "Language"
+   },
+   "langAuto": {
+      "message": "Auto"
+   },
+   "langEnglish": {
+      "message": "English"
+   },
+   "langChineseSimplified": {
+      "message": "简体中文"
+   },
+   "langJapanese": {
+      "message": "日本語"
+   },
+   "langKorean": {
+      "message": "한국어"
+   },
+   "tipFullscreen": {
+      "message": "Open fullscreen editor"
+   },
+   "tipResize": {
+      "message": "Drag to resize (min: default size)"
+   }
+}

@@ -1,0 +1,62 @@
+name: Package Extensions
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read extension versions
+        id: versions
+        run: |
+          chrome_version=$(python - <<'PY'
+          import json
+          with open('chrome/manifest.json', 'r', encoding='utf-8') as fp:
+            print(json.load(fp)['version'])
+          PY
+          )
+          firefox_version=$(python - <<'PY'
+          import json
+          with open('firefox/manifest.json', 'r', encoding='utf-8') as fp:
+            print(json.load(fp)['version'])
+          PY
+          )
+          echo "chrome_version=$chrome_version" >> "$GITHUB_OUTPUT"
+          echo "firefox_version=$firefox_version" >> "$GITHUB_OUTPUT"
+
+      - name: Build package files
+        run: |
+          mkdir -p dist/store dist/offline
+
+          pushd chrome >/dev/null
+          zip -qr "../dist/store/memos-bber-chrome-webstore-${{ steps.versions.outputs.chrome_version }}.zip" .
+          zip -qr "../dist/offline/memos-bber-chrome-offline-${{ steps.versions.outputs.chrome_version }}.zip" .
+          popd >/dev/null
+
+          pushd firefox >/dev/null
+          zip -qr "../dist/store/memos-bber-firefox-amo-${{ steps.versions.outputs.firefox_version }}.xpi" .
+          zip -qr "../dist/offline/memos-bber-firefox-offline-${{ steps.versions.outputs.firefox_version }}.xpi" .
+          popd >/dev/null
+
+      - name: Upload store packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-packages
+          path: dist/store/*
+          if-no-files-found: error
+
+      - name: Upload offline packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-packages
+          path: dist/offline/*
+          if-no-files-found: error

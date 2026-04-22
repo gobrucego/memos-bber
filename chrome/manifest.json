@@ -1,0 +1,39 @@
+{
+   "manifest_version": 3,
+   "name": "__MSG_extName__",
+   "default_locale": "en",
+   "version": "2026.04.23",
+   "action": {
+      "default_popup": "popup.html",
+      "default_icon": "assets/logo_24x24.png",
+      "default_title": "__MSG_actionTitle__"
+   },
+   "description": "__MSG_extDescription__",
+   "homepage_url": "https://github.com/Jonnyan404/memos-bber",
+   "icons": {
+      "128": "assets/logo.png",
+      "16": "assets/logo.png",
+      "48": "assets/logo.png"
+   },
+   "background": {
+      "service_worker": "js/background.js"
+    },
+   "permissions": [
+      "tabs",
+      "scripting",
+      "windows",
+      "storage",
+      "activeTab",
+      "contextMenus"
+   ],
+   "host_permissions": ["http://*/*", "https://*/*"],
+   "commands": {
+      "open-extension": {
+        "description": "Open my extension",
+        "suggested_key": {
+            "default": "Ctrl+Shift+F",
+            "mac": "MacCtrl+Shift+F"
+        }
+      }
+    }
+}

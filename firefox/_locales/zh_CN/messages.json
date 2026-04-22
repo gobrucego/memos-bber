@@ -1,0 +1,188 @@
+{
+   "extName": {
+      "message": "Memos"
+   },
+   "actionTitle": {
+      "message": "发送 Memos"
+   },
+   "extDescription": {
+      "message": "一键发送灵感时刻，珍藏你的记忆"
+   },
+   "sendTo": {
+      "message": "发送至 Memos “%s”"
+   },
+   "sendLinkTo": {
+      "message": "发送链接至 Memos"
+   },
+   "sendImageTo": {
+      "message": "发送图片至 Memos"
+   },
+   "saveBtn":{
+      "message": "保存"
+   },
+   "supportedMemosVersion": {
+      "message": "兼容 Memos v0.15.0 - 0.27.x"
+   },
+   "settingsConnectionTitle": {
+      "message": "连接设置"
+   },
+   "settingsConnectionDesc": {
+      "message": "配置 Memos 服务地址和访问令牌。"
+   },
+   "settingsPostingTitle": {
+      "message": "发送设置"
+   },
+   "settingsPostingDesc": {
+      "message": "仅发送附件时的默认文本"
+   },
+   "placeApiUrl":{
+      "message": "请填入 Memos 主页网址"
+   },
+   "placeApiTokens":{
+      "message": "请填入 Memos Access Tokens"
+   },
+   "placeContent":{
+      "message": "现在的想法是..."
+   },
+   "lockPrivate":{
+      "message": "私有"
+   },
+   "lockProtected":{
+      "message": "登录可见"
+   },
+   "lockPublic":{
+      "message": "公开"
+   },
+   "submitBtn":{
+      "message": "记下"
+   },
+   "placeHideInput":{
+      "message": "默认“私有”标签名"
+   },
+   "placeShowInput":{
+      "message": "默认“公开”标签名"
+   },
+   "placeAttachmentOnlyDefaultText":{
+      "message": "仅发送附件时的默认文本（留空则使用内置文案）"
+   },
+   "picDrag":{
+      "message": "拖拽到窗口上传该图片"
+   },
+   "picCancelDrag":{
+      "message": "取消上传"
+   },
+   "picUploading":{
+      "message": "图片上传中……"
+   },
+   "picSuccess":{
+      "message": "上传完成"
+   },
+   "picFailed":{
+      "message": "上传图片失败"
+   },
+   "picPending":{
+      "message": "有图片等待上传"
+   },
+   "saveSuccess":{
+      "message": "保存信息成功"
+   },
+   "searchNow":{
+      "message": "想搜点啥？"
+   },
+   "searchNone":{
+      "message": "搜不到，换个词试试"
+   },
+   "archiveSuccess":{
+      "message": "归档成功！😊"
+   },
+   "archiveFailed":{
+      "message": "归档失败 😭"
+   },
+   "getTabFailed":{
+      "message": "获取标签失败 😭"
+   },
+   "memoUploading":{
+      "message": "发送中……"
+   },
+   "memoSuccess":{
+      "message": "发送成功！😊"
+   },
+   "memoFailed":{
+      "message": "发送失败 😭"
+   },
+   "invalidToken":{
+      "message": "无效的 token 或 url 😭"
+   },
+   "uploadedListTitle": {
+      "message": "已上传文件,可拖动排序"
+   },
+   "uploadedListEmpty": {
+      "message": "暂无已上传文件"
+   },
+   "tipReorder": {
+      "message": "拖动排序"
+   },
+   "tipDeleteAttachment": {
+      "message": "删除"
+   },
+   "attachmentDeleteSuccess": {
+      "message": "删除成功"
+   },
+   "attachmentDeleteFailed": {
+      "message": "删除失败 😭"
+   },
+   "tipOpenSite": {
+      "message": "打开 Memos"
+   },
+   "tipSettings": {
+      "message": "设置"
+   },
+   "tipTags": {
+      "message": "插入标签"
+   },
+   "tipTodo": {
+      "message": "插入待办"
+   },
+   "tipUpload": {
+      "message": "上传文件"
+   },
+   "tipLink": {
+      "message": "插入当前页面链接"
+   },
+   "tipRandom": {
+      "message": "随机一条"
+   },
+   "tipSearch": {
+      "message": "搜索"
+   },
+   "tipVisibility": {
+      "message": "可见性"
+   },
+   "tipSend": {
+      "message": "发送（Ctrl/⌘+Enter）"
+   },
+   "tipLanguage": {
+      "message": "语言"
+   },
+   "langAuto": {
+      "message": "跟随浏览器"
+   },
+   "langEnglish": {
+      "message": "English"
+   },
+   "langChineseSimplified": {
+      "message": "简体中文"
+   },
+   "langJapanese": {
+      "message": "日本語"
+   },
+   "langKorean": {
+      "message": "한국어"
+   },
+   "tipFullscreen": {
+      "message": "全屏编辑"
+   },
+   "tipResize": {
+      "message": "拖拽缩放编辑框（最小为默认大小）"
+   }
+}

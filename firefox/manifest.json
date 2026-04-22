@@ -1,33 +1,36 @@
 {
-   "manifest_version": 3,
+   "manifest_version": 2,
    "name": "__MSG_extName__",
    "default_locale": "en",
-   "version": "2026.04.22",
-   "version_name": "Supports 0.15.0 - 0.27.x",
-   "action": {
+   "version": "2026.4.23",
+   "browser_action": {
       "default_popup": "popup.html",
       "default_icon": "assets/logo_24x24.png",
       "default_title": "__MSG_actionTitle__"
    },
    "description": "__MSG_extDescription__",
    "homepage_url": "https://github.com/Jonnyan404/memos-bber",
+   "browser_specific_settings": {
+      "gecko": {
+         "id": "memos-bber@jonnyan404.github.io"
+      }
+   },
    "icons": {
       "128": "assets/logo.png",
       "16": "assets/logo.png",
       "48": "assets/logo.png"
    },
    "background": {
-      "service_worker": "js/background.js"
-    },
+      "scripts": ["js/background.js"]
+   },
    "permissions": [
       "tabs",
-      "scripting",
-      "windows",
       "storage",
       "activeTab",
-      "contextMenus"
+      "contextMenus",
+      "http://*/*",
+      "https://*/*"
    ],
-   "host_permissions": ["http://*/*", "https://*/*"],
    "commands": {
       "open-extension": {
         "description": "Open my extension",
