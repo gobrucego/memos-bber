@@ -12,13 +12,16 @@
    "homepage_url": "https://github.com/Jonnyan404/memos-bber",
    "browser_specific_settings": {
       "gecko": {
-         "id": "memos-bber@jonnyan404.github.io"
+         "id": "memos-bber@jonnyan404.github.io",
+         "data_collection_permissions": {
+            "required": false
+         }
       }
    },
    "icons": {
-      "128": "assets/logo.png",
-      "16": "assets/logo.png",
-      "48": "assets/logo.png"
+      "128": "assets/logo-128.png",
+      "16": "assets/logo-16.png",
+      "48": "assets/logo-48.png"
    },
    "background": {
       "scripts": ["js/background.js"]

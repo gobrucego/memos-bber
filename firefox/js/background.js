@@ -99,24 +99,17 @@ function getSelectionTextFromTab(tabId, fallbackText) {
   })
 }
 
-function getActionApi() {
-  if (chrome.action && typeof chrome.action.openPopup === 'function') return chrome.action
-  if (chrome.browserAction && typeof chrome.browserAction.openPopup === 'function') return chrome.browserAction
-  return null
-}
-
 function tryOpenActionPopup(tab) {
   try {
-    const actionApi = getActionApi()
-    if (!actionApi) return
+    if (!chrome.browserAction || typeof chrome.browserAction.openPopup !== 'function') return
     const windowId = tab && typeof tab.windowId === 'number' ? tab.windowId : undefined
 
     const open = () => {
       try {
         if (typeof windowId === 'number') {
-          actionApi.openPopup({ windowId }, () => void chrome.runtime.lastError)
+          chrome.browserAction.openPopup({ windowId }, () => void chrome.runtime.lastError)
         } else {
-          actionApi.openPopup({}, () => void chrome.runtime.lastError)
+          chrome.browserAction.openPopup({}, () => void chrome.runtime.lastError)
         }
       } catch (_) {
         // best-effort only
