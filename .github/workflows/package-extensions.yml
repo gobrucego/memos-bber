@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Release tag used for direct asset upload, for example v2026.04.23
         required: true
-        default: 'v2026.04.23'
+        default: 'v2026.04.24'
   push:
     tags:
       - 'v*'
@@ -48,8 +48,15 @@ jobs:
             print(json.load(fp)['version'])
           PY
           )
+          edge_version=$(python - <<'PY'
+          import json
+          with open('edge/manifest.json', 'r', encoding='utf-8') as fp:
+            print(json.load(fp)['version'])
+          PY
+          )
           echo "chrome_version=$chrome_version" >> "$GITHUB_OUTPUT"
           echo "firefox_version=$firefox_version" >> "$GITHUB_OUTPUT"
+          echo "edge_version=$edge_version" >> "$GITHUB_OUTPUT"
 
       - name: Build package files
         run: |
@@ -57,6 +64,10 @@ jobs:
 
           pushd chrome >/dev/null
           zip -qr "../dist/release/memos-bber-chrome-${{ steps.versions.outputs.chrome_version }}.zip" .
+          popd >/dev/null
+
+          pushd edge >/dev/null
+          zip -qr "../dist/release/memos-bber-edge-${{ steps.versions.outputs.edge_version }}.zip" .
           popd >/dev/null
 
           pushd firefox >/dev/null
@@ -77,4 +88,5 @@ jobs:
           tag='${{ steps.release.outputs.tag }}'
           echo "## Release assets" >> "$GITHUB_STEP_SUMMARY"
           echo "- Chrome: https://github.com/${{ github.repository }}/releases/download/$tag/memos-bber-chrome-${{ steps.versions.outputs.chrome_version }}.zip" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Edge: https://github.com/${{ github.repository }}/releases/download/$tag/memos-bber-edge-${{ steps.versions.outputs.edge_version }}.zip" >> "$GITHUB_STEP_SUMMARY"
           echo "- Firefox: https://github.com/${{ github.repository }}/releases/download/$tag/memos-bber-firefox-${{ steps.versions.outputs.firefox_version }}.xpi" >> "$GITHUB_STEP_SUMMARY"
