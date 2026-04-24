@@ -170,6 +170,15 @@
   "langEnglish": {
     "message": "English"
   },
+  "langGerman": {
+    "message": "Deutsch"
+  },
+  "langFrench": {
+    "message": "Français"
+  },
+  "langSpanish": {
+    "message": "Español"
+  },
   "langChineseSimplified": {
     "message": "简体中文"
   },

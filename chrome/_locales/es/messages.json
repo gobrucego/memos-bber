@@ -1,0 +1,197 @@
+{
+  "extName": {
+    "message": "Memos"
+  },
+  "actionTitle": {
+    "message": "Enviar a Memos"
+  },
+  "extDescription": {
+    "message": "memos: un centro de notas ligero y autoalojado."
+  },
+  "sendTo": {
+    "message": "Enviar a Memos \"%s\""
+  },
+  "sendLinkTo": {
+    "message": "Enviar enlace a Memos"
+  },
+  "sendImageTo": {
+    "message": "Enviar imagen a Memos"
+  },
+  "saveBtn": {
+    "message": "Guardar"
+  },
+  "supportedMemosVersion": {
+    "message": "Compatible con Memos v0.15.0 - 0.27.x"
+  },
+  "settingsConnectionTitle": {
+    "message": "Conexión"
+  },
+  "settingsConnectionDesc": {
+    "message": "Configura la URL del sitio de Memos y el token de acceso."
+  },
+  "settingsPostingTitle": {
+    "message": "Publicación"
+  },
+  "settingsPostingDesc": {
+    "message": "Texto predeterminado para envíos solo con adjuntos"
+  },
+  "placeApiUrl": {
+    "message": "URL del sitio de Memos"
+  },
+  "placeApiTokens": {
+    "message": "Tokens de acceso de Memos"
+  },
+  "placeContent": {
+    "message": "¿Qué tienes en mente...?"
+  },
+  "lockPrivate": {
+    "message": "Privado"
+  },
+  "lockProtected": {
+    "message": "Protegido"
+  },
+  "lockPublic": {
+    "message": "Público"
+  },
+  "submitBtn": {
+    "message": "Guardar"
+  },
+  "placeHideInput": {
+    "message": "Nombre predeterminado de la etiqueta \"Privado\""
+  },
+  "placeShowInput": {
+    "message": "Nombre predeterminado de la etiqueta \"Visible para todos\""
+  },
+  "placeAttachmentOnlyDefaultText": {
+    "message": "Texto predeterminado para envíos solo con adjuntos (déjalo vacío para usar el texto integrado)"
+  },
+  "uploadedListTitle": {
+    "message": "Archivos subidos, arrastra para reordenar"
+  },
+  "uploadedListEmpty": {
+    "message": "No hay archivos subidos"
+  },
+  "tipReorder": {
+    "message": "Arrastra para reordenar"
+  },
+  "tipDeleteAttachment": {
+    "message": "Eliminar"
+  },
+  "attachmentDeleteSuccess": {
+    "message": "Eliminado"
+  },
+  "attachmentDeleteFailed": {
+    "message": "Error al eliminar 😭"
+  },
+  "picDrag": {
+    "message": "Arrastra la imagen para subirla"
+  },
+  "picCancelDrag": {
+    "message": "Cancelar subida"
+  },
+  "picUploading": {
+    "message": "Subiendo la imagen..."
+  },
+  "picSuccess": {
+    "message": "Subida completada"
+  },
+  "picFailed": {
+    "message": "La subida falló"
+  },
+  "picPending": {
+    "message": "La imagen aún se está subiendo"
+  },
+  "saveSuccess": {
+    "message": "¡Configuración guardada!"
+  },
+  "searchNow": {
+    "message": "¿Qué estás buscando?"
+  },
+  "searchNone": {
+    "message": "¡Prueba con otra palabra!"
+  },
+  "archiveSuccess": {
+    "message": "Archivado 😊"
+  },
+  "archiveFailed": {
+    "message": "Error al archivar 😭"
+  },
+  "getTabFailed": {
+    "message": "Error al obtener la pestaña 😭"
+  },
+  "memoUploading": {
+    "message": "Enviando"
+  },
+  "memoSuccess": {
+    "message": "¡Éxito! 😊"
+  },
+  "memoFailed": {
+    "message": "¡Falló! 😭"
+  },
+  "invalidToken": {
+    "message": "Token o URL no válidos 😭"
+  },
+  "tipOpenSite": {
+    "message": "Abrir Memos"
+  },
+  "tipSettings": {
+    "message": "Configuración"
+  },
+  "tipTags": {
+    "message": "Insertar etiqueta"
+  },
+  "tipTodo": {
+    "message": "Insertar tarea"
+  },
+  "tipUpload": {
+    "message": "Subir archivo"
+  },
+  "tipLink": {
+    "message": "Insertar enlace de la pestaña actual"
+  },
+  "tipRandom": {
+    "message": "Memo aleatorio"
+  },
+  "tipSearch": {
+    "message": "Buscar"
+  },
+  "tipVisibility": {
+    "message": "Visibilidad"
+  },
+  "tipSend": {
+    "message": "Enviar (Ctrl/⌘+Enter)"
+  },
+  "tipLanguage": {
+    "message": "Idioma"
+  },
+  "langAuto": {
+    "message": "Auto"
+  },
+  "langEnglish": {
+    "message": "English"
+  },
+  "langGerman": {
+    "message": "Deutsch"
+  },
+  "langFrench": {
+    "message": "Français"
+  },
+  "langSpanish": {
+    "message": "Español"
+  },
+  "langChineseSimplified": {
+    "message": "简体中文"
+  },
+  "langJapanese": {
+    "message": "日本語"
+  },
+  "langKorean": {
+    "message": "한국어"
+  },
+  "tipFullscreen": {
+    "message": "Abrir editor en pantalla completa"
+  },
+  "tipResize": {
+    "message": "Arrastra para cambiar el tamaño (mín.: tamaño predeterminado)"
+  }
+}

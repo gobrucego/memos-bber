@@ -1,0 +1,197 @@
+{
+  "extName": {
+    "message": "Memos"
+  },
+  "actionTitle": {
+    "message": "An Memos senden"
+  },
+  "extDescription": {
+    "message": "memos: Ein leichtgewichtiges, selbst gehostetes Memo-Hub."
+  },
+  "sendTo": {
+    "message": "An Memos senden \"%s\""
+  },
+  "sendLinkTo": {
+    "message": "Link an Memos senden"
+  },
+  "sendImageTo": {
+    "message": "Bild an Memos senden"
+  },
+  "saveBtn": {
+    "message": "Speichern"
+  },
+  "supportedMemosVersion": {
+    "message": "Kompatibel mit Memos v0.15.0 - 0.27.x"
+  },
+  "settingsConnectionTitle": {
+    "message": "Verbindung"
+  },
+  "settingsConnectionDesc": {
+    "message": "Konfiguriere die URL der Memos-Instanz und das Zugriffstoken."
+  },
+  "settingsPostingTitle": {
+    "message": "Verfassen"
+  },
+  "settingsPostingDesc": {
+    "message": "Standardtext für Uploads ohne Text"
+  },
+  "placeApiUrl": {
+    "message": "URL der Memos-Instanz"
+  },
+  "placeApiTokens": {
+    "message": "Memos-Zugriffstoken"
+  },
+  "placeContent": {
+    "message": "Was geht dir durch den Kopf..."
+  },
+  "lockPrivate": {
+    "message": "Privat"
+  },
+  "lockProtected": {
+    "message": "Geschützt"
+  },
+  "lockPublic": {
+    "message": "Öffentlich"
+  },
+  "submitBtn": {
+    "message": "Speichern"
+  },
+  "placeHideInput": {
+    "message": "Standardname für den Tag \"Privat\""
+  },
+  "placeShowInput": {
+    "message": "Standardname für den Tag \"Für alle sichtbar\""
+  },
+  "placeAttachmentOnlyDefaultText": {
+    "message": "Standardtext für Uploads ohne Text (leer lassen, um den eingebauten Text zu verwenden)"
+  },
+  "uploadedListTitle": {
+    "message": "Hochgeladene Dateien, zum Neuordnen ziehen"
+  },
+  "uploadedListEmpty": {
+    "message": "Keine hochgeladenen Dateien"
+  },
+  "tipReorder": {
+    "message": "Zum Neuordnen ziehen"
+  },
+  "tipDeleteAttachment": {
+    "message": "Löschen"
+  },
+  "attachmentDeleteSuccess": {
+    "message": "Gelöscht"
+  },
+  "attachmentDeleteFailed": {
+    "message": "Löschen fehlgeschlagen 😭"
+  },
+  "picDrag": {
+    "message": "Bild zum Hochladen hierher ziehen"
+  },
+  "picCancelDrag": {
+    "message": "Upload abbrechen"
+  },
+  "picUploading": {
+    "message": "Bild wird hochgeladen..."
+  },
+  "picSuccess": {
+    "message": "Upload abgeschlossen"
+  },
+  "picFailed": {
+    "message": "Upload fehlgeschlagen"
+  },
+  "picPending": {
+    "message": "Bild wird noch hochgeladen"
+  },
+  "saveSuccess": {
+    "message": "Einstellungen gespeichert!"
+  },
+  "searchNow": {
+    "message": "Wonach suchst du?"
+  },
+  "searchNone": {
+    "message": "Versuche es mit einem anderen Wort!"
+  },
+  "archiveSuccess": {
+    "message": "Archiviert 😊"
+  },
+  "archiveFailed": {
+    "message": "Archivieren fehlgeschlagen 😭"
+  },
+  "getTabFailed": {
+    "message": "Tab konnte nicht gelesen werden 😭"
+  },
+  "memoUploading": {
+    "message": "Wird gesendet"
+  },
+  "memoSuccess": {
+    "message": "Erfolgreich! 😊"
+  },
+  "memoFailed": {
+    "message": "Fehlgeschlagen! 😭"
+  },
+  "invalidToken": {
+    "message": "Ungültiges Token oder ungültige URL 😭"
+  },
+  "tipOpenSite": {
+    "message": "Memos öffnen"
+  },
+  "tipSettings": {
+    "message": "Einstellungen"
+  },
+  "tipTags": {
+    "message": "Tag einfügen"
+  },
+  "tipTodo": {
+    "message": "Todo einfügen"
+  },
+  "tipUpload": {
+    "message": "Datei hochladen"
+  },
+  "tipLink": {
+    "message": "Link des aktuellen Tabs einfügen"
+  },
+  "tipRandom": {
+    "message": "Zufälliges Memo"
+  },
+  "tipSearch": {
+    "message": "Suchen"
+  },
+  "tipVisibility": {
+    "message": "Sichtbarkeit"
+  },
+  "tipSend": {
+    "message": "Senden (Strg/⌘+Enter)"
+  },
+  "tipLanguage": {
+    "message": "Sprache"
+  },
+  "langAuto": {
+    "message": "Automatisch"
+  },
+  "langEnglish": {
+    "message": "English"
+  },
+  "langGerman": {
+    "message": "Deutsch"
+  },
+  "langFrench": {
+    "message": "Français"
+  },
+  "langSpanish": {
+    "message": "Español"
+  },
+  "langChineseSimplified": {
+    "message": "简体中文"
+  },
+  "langJapanese": {
+    "message": "日本語"
+  },
+  "langKorean": {
+    "message": "한국어"
+  },
+  "tipFullscreen": {
+    "message": "Vollbild-Editor öffnen"
+  },
+  "tipResize": {
+    "message": "Zum Ändern der Größe ziehen (Minimum: Standardgröße)"
+  }
+}

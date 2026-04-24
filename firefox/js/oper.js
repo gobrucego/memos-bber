@@ -183,6 +183,21 @@ function msg(key) {
 
 function applyDayjsLocaleByUiLanguage(uiLang) {
   const lang = String(uiLang || 'auto')
+  if (lang === 'de') {
+    dayjs.locale('de')
+    return
+  }
+
+  if (lang === 'fr') {
+    dayjs.locale('fr')
+    return
+  }
+
+  if (lang === 'es') {
+    dayjs.locale('es')
+    return
+  }
+
   if (lang === 'zh_CN') {
     dayjs.locale('zh-cn')
     return
@@ -205,6 +220,18 @@ function applyDayjsLocaleByUiLanguage(uiLang) {
 
   // auto: best-effort infer from browser UI language
   const ui = String(chrome.i18n.getUILanguage ? chrome.i18n.getUILanguage() : '').toLowerCase()
+  if (ui.startsWith('de')) {
+    dayjs.locale('de')
+    return
+  }
+  if (ui.startsWith('fr')) {
+    dayjs.locale('fr')
+    return
+  }
+  if (ui.startsWith('es')) {
+    dayjs.locale('es')
+    return
+  }
   if (ui.startsWith('zh')) {
     dayjs.locale('zh-cn')
     return

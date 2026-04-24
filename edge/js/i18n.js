@@ -1,6 +1,6 @@
 const UI_LANGUAGE_STORAGE_KEY = 'uiLanguage'
 
-const SUPPORTED_UI_LANGUAGES = new Set(['auto', 'en', 'zh_CN', 'ja', 'ko'])
+const SUPPORTED_UI_LANGUAGES = new Set(['auto', 'en', 'de', 'fr', 'es', 'zh_CN', 'ja', 'ko'])
 
 function normalizeUiLanguage(value) {
 	const lang = String(value || 'auto')
@@ -49,6 +49,9 @@ let overrideMessages = null
 
 function getLanguageToggleLabel(lang) {
 	if (lang === 'en') return 'EN'
+	if (lang === 'de') return 'DE'
+	if (lang === 'fr') return 'FR'
+	if (lang === 'es') return 'ES'
 	if (lang === 'zh_CN') return '中'
 	if (lang === 'ja') return '日'
 	if (lang === 'ko') return '한'
@@ -132,6 +135,9 @@ function applyStaticI18n() {
 	// Language switcher
 	setText('langOptionAuto', 'langAuto')
 	setText('langOptionEn', 'langEnglish')
+	setText('langOptionDe', 'langGerman')
+	setText('langOptionFr', 'langFrench')
+	setText('langOptionEs', 'langSpanish')
 	setText('langOptionZhCN', 'langChineseSimplified')
 	setText('langOptionJa', 'langJapanese')
 	setText('langOptionKo', 'langKorean')
