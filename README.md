@@ -3,7 +3,7 @@
 ## 在线商店安装
 
 - Chrome 应用商店：https://chrome.google.com/webstore/detail/memos-bber/cbhjebjfccgchgbmfbobjmebjjckgofe/
-- (审核中)FireFox 应用商店: https://addons.mozilla.org/zh-CN/firefox/addon/memos-bber/
+- FireFox 应用商店: https://addons.mozilla.org/zh-CN/firefox/addon/memos-bber/
 - (等待上架)Edge: 使用离线安装包或者直接使用 chrome 扩展
 
 ## 移动端
